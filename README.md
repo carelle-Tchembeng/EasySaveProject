@@ -294,7 +294,6 @@ The project supervisor must be invited as a collaborator to follow development p
 |---|---|
 | `main` | Stable releases only |
 | `develop` | Active development |
-| `feature/xxx` | Individual features |
 
 ### Code standards
 
