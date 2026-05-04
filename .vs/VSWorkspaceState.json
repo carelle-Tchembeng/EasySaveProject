@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\EasyLog",
+    "\\EasyLog\\Factory",
+    "\\EasyLog\\Formatters",
+    "\\EasySave.ConsoleApp",
+    "\\EasySave.Core",
+    "\\EasySave.Core\\Entities",
+    "\\EasySave.Core\\Interfaces",
+    "\\EasySave.Core\\obj",
+    "\\EasySave.Core\\Services"
+  ],
+  "SelectedNode": "\\EasySave.ConsoleApp\\EasySave.ConsoleApp.csproj",
+  "PreviewInSolutionExplorer": false
+}
