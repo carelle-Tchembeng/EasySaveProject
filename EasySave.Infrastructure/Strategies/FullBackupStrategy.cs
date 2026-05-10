@@ -1,5 +1,3 @@
-// EasySave.Infrastructure/Strategies/FullBackupStrategy.cs
-
 using EasySave.Core.Entities;
 using EasySave.Core.Interfaces;
 using EasySave.Infrastructure.Helpers;
@@ -7,58 +5,68 @@ using EasySave.Infrastructure.Helpers;
 namespace EasySave.Infrastructure.Strategies
 {
     /// <summary>
-    /// Backup strategy that copies all files from source to target,
-    /// regardless of their modification date.
-    /// Every execution is a complete mirror of the source directory.
-    /// Implements IBackupStrategy following the Strategy design pattern.
+    /// Full backup strategy.
+    ///
+    /// This strategy copies every file from the source directory
+    /// to the target directory, preserving the directory structure.
     /// </summary>
     public class FullBackupStrategy : IBackupStrategy
     {
         /// <summary>
-        /// Executes a full backup: copies every file in the source directory tree
-        /// to the corresponding location in the target directory.
-        /// Recreates the full directory structure in the target.
-        /// Calls onFileCopied after each file transfer (success or failure).
+        /// For a full backup, every file in the source directory is eligible.
         /// </summary>
-        /// <param name="job">Backup job containing source and target paths.</param>
-        /// <param name="fileSystem">File system abstraction for I/O operations.</param>
-        /// <param name="logger">Logger abstraction (unused here — logging done via callback).</param>
-        /// <param name="onFileCopied">
-        /// Callback invoked after each file.
-        /// Parameters: (sourceFile, destFile, fileSizeBytes, transferTimeMs)
-        /// transferTimeMs is negative on copy failure.
-        /// </param>
+        public List<string> GetEligibleFiles(
+            BackupJob job,
+            IFileSystem fileSystem)
+        {
+            return fileSystem.GetFiles(job.SourcePath);
+        }
+
+        /// <summary>
+        /// Executes the full backup.
+        ///
+        /// Steps:
+        /// 1. Recreate the directory structure in the target.
+        /// 2. Copy every eligible file.
+        /// 3. Notify BackupService through the callback after each file.
+        /// </summary>
         public void Execute(
             BackupJob job,
             IFileSystem fileSystem,
             ILogger logger,
             Action<string, string, long, long> onFileCopied)
         {
-            // Step 1: Recreate the full directory structure in the target
+            // First recreate all subdirectories in the target location.
             var directories = fileSystem.GetDirectories(job.SourcePath);
+
             foreach (string sourceDir in directories)
             {
                 string destDir = PathHelper.MapToTargetPath(
-                    job.SourcePath, job.TargetPath, sourceDir);
+                    job.SourcePath,
+                    job.TargetPath,
+                    sourceDir);
 
                 fileSystem.CreateDirectory(destDir);
             }
 
-            // Step 2: Copy every file in the source tree
-            var files = fileSystem.GetFiles(job.SourcePath);
+            // Then copy all files.
+            var files = GetEligibleFiles(job, fileSystem);
+
             foreach (string sourceFile in files)
             {
                 string destFile = PathHelper.MapToTargetPath(
-                    job.SourcePath, job.TargetPath, sourceFile);
+                    job.SourcePath,
+                    job.TargetPath,
+                    sourceFile);
 
-                // Convert paths to UNC format for log entries
+                // Logs must contain UNC paths according to the specification.
                 string uncSource = fileSystem.ToUncPath(sourceFile);
-                string uncDest   = fileSystem.ToUncPath(destFile);
+                string uncDest = fileSystem.ToUncPath(destFile);
 
-                long fileSize     = fileSystem.GetFileSize(sourceFile);
+                long fileSize = fileSystem.GetFileSize(sourceFile);
                 long transferTime = fileSystem.CopyFile(sourceFile, destFile);
 
-                // Notify BackupService — triggers state.json update and log write
+                // Delegate progress update, state update and logging to BackupService.
                 onFileCopied(uncSource, uncDest, fileSize, transferTime);
             }
         }

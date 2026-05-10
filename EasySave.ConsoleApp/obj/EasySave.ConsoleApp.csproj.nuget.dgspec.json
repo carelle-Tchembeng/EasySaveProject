@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\carel\\Documents\\EasySaveProject\\EasySave.ConsoleApp\\EasySave.ConsoleApp.csproj": {}
+    "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.ConsoleApp\\EasySave.ConsoleApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\carel\\Documents\\EasySaveProject\\EasySave.ConsoleApp\\EasySave.ConsoleApp.csproj": {
+    "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasyLog\\EasyLog.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\carel\\Documents\\EasySaveProject\\EasySave.ConsoleApp\\EasySave.ConsoleApp.csproj",
-        "projectName": "EasySave.ConsoleApp",
-        "projectPath": "C:\\Users\\carel\\Documents\\EasySaveProject\\EasySave.ConsoleApp\\EasySave.ConsoleApp.csproj",
-        "packagesPath": "C:\\Users\\carel\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\carel\\Documents\\EasySaveProject\\EasySave.ConsoleApp\\obj\\",
+        "projectUniqueName": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasyLog\\EasyLog.csproj",
+        "projectName": "EasyLog",
+        "projectPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasyLog\\EasyLog.csproj",
+        "packagesPath": "C:\\Users\\tchal\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasyLog\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\carel\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\tchal\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -50,6 +50,14 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.26, )",
+              "autoReferenced": true
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -61,12 +69,327 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
+        }
+      }
+    },
+    "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.ConsoleApp\\EasySave.ConsoleApp.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.ConsoleApp\\EasySave.ConsoleApp.csproj",
+        "projectName": "EasySave.ConsoleApp",
+        "projectPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.ConsoleApp\\EasySave.ConsoleApp.csproj",
+        "packagesPath": "C:\\Users\\tchal\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.ConsoleApp\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\tchal\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasyLog\\EasyLog.csproj": {
+                "projectPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasyLog\\EasyLog.csproj"
+              },
+              "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj": {
+                "projectPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj"
+              },
+              "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.26, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
+        }
+      }
+    },
+    "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj",
+        "projectName": "EasySave.Core",
+        "projectPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj",
+        "packagesPath": "C:\\Users\\tchal\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Core\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\tchal\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.26, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
+        }
+      }
+    },
+    "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj",
+        "projectName": "EasySave.Infrastructure",
+        "projectPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\tchal\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\tchal\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasyLog\\EasyLog.csproj": {
+                "projectPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasyLog\\EasyLog.csproj"
+              },
+              "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj": {
+                "projectPath": "C:\\Users\\tchal\\Documents\\CESI SUPPORT\\GL\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.26, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     }

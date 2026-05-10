@@ -1,0 +1,6 @@
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Release\net8.0\win-x64\publish\EasySave.ConsoleApp.pdb
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Release\net8.0\win-x64\publish\EasySave.Core.runtimeconfig.json
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Release\net8.0\win-x64\publish\EasySave.Core.pdb
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Release\net8.0\win-x64\publish\EasySave.Infrastructure.pdb
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Release\net8.0\win-x64\publish\EasyLog.pdb
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Release\net8.0\win-x64\publish\EasySave.ConsoleApp.exe

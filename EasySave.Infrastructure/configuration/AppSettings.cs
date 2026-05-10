@@ -1,96 +1,215 @@
-// EasySave.Infrastructure/Configuration/AppSettings.cs
-
+using EasySave.Infrastructure.Helpers;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace EasySave.Infrastructure.Configuration
 {
     /// <summary>
-    /// Holds all application-level configuration values.
-    /// Loaded once at startup from appsettings.json.
-    /// All paths are computed relative to the application data directory
-    /// to ensure compatibility with customer server environments.
-    /// Temp paths (e.g. C:\temp) are never used.
+    /// Represents global application settings.
+    ///
+    /// In EasySave v1.1, this class is mainly used to store:
+    /// - configuration file path
+    /// - state file path
+    /// - log directory
+    /// - selected log format: JSON or XML
+    /// - selected language
+    ///
+    /// Settings are stored in ProgramData to avoid hardcoded temporary paths
+    /// and to remain suitable for client/server environments.
     /// </summary>
     public class AppSettings
     {
-        // ─────────────────────────────────────────────────────────────
-        // Default paths — relative to %ProgramData%\EasySave
-        // ─────────────────────────────────────────────────────────────
-
-        private static readonly string BaseDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-            "EasySave");
-
-        // ─────────────────────────────────────────────────────────────
-        // Properties
-        // ─────────────────────────────────────────────────────────────
+        /// <summary>
+        /// Path of the settings file itself.
+        ///
+        /// This property is ignored during serialization because it is metadata,
+        /// not an actual configurable setting.
+        /// </summary>
+        [JsonIgnore]
+        public string SettingsFilePath { get; private set; } = PathHelper.GetSettingsPath();
 
         /// <summary>
-        /// Full path to the backup job configuration file.
-        /// Default: %ProgramData%\EasySave\config.json
+        /// Full path to the backup jobs configuration file.
         /// </summary>
-        public string ConfigFilePath { get; set; } = Path.Combine(BaseDirectory, "config.json");
+        public string ConfigFilePath { get; set; } = PathHelper.GetConfigPath();
 
         /// <summary>
         /// Full path to the real-time state file.
-        /// Default: %ProgramData%\EasySave\state.json
         /// </summary>
-        public string StateFilePath { get; set; } = Path.Combine(BaseDirectory, "state.json");
+        public string StateFilePath { get; set; } = PathHelper.GetStatePath();
 
         /// <summary>
-        /// Full path to the directory containing daily log files.
-        /// Default: %ProgramData%\EasySave\logs
+        /// Directory where daily log files are created.
         /// </summary>
-        public string LogDirectory { get; set; } = Path.Combine(BaseDirectory, "logs");
+        public string LogDirectory { get; set; } = PathHelper.GetLogDirectory();
 
         /// <summary>
-        /// Default language code used if system language detection fails.
-        /// Supported values: "fr", "en"
+        /// Selected log format.
+        /// Supported values: "Json" and "Xml".
+        /// Default is Json for backward compatibility with EasySave v1.0.
         /// </summary>
-        public string DefaultLanguage { get; set; } = "en";
-
-        // ─────────────────────────────────────────────────────────────
-        // Factory method
-        // ─────────────────────────────────────────────────────────────
+        public string LogFormat { get; set; } = "Json";
 
         /// <summary>
-        /// Loads application settings from the specified JSON file.
-        /// If the file does not exist, returns an instance with default values.
-        /// If the file is malformed, logs a warning and returns defaults.
+        /// Preferred user interface language.
+        /// Supported values: "fr" and "en".
         /// </summary>
-        /// <param name="settingsFilePath">
-        /// Path to the appsettings.json file.
-        /// Typically located next to the executable.
-        /// </param>
-        /// <returns>Populated AppSettings instance. Never null.</returns>
+        public string Language { get; set; } = "en";
+
+        /// <summary>
+        /// Loads settings from the default ProgramData location.
+        /// </summary>
+        public static AppSettings LoadDefault()
+        {
+            return Load(PathHelper.GetSettingsPath());
+        }
+
+        /// <summary>
+        /// Loads settings from the specified file path.
+        ///
+        /// If the file does not exist, a default one is created automatically.
+        /// If the file is empty or corrupted, safe defaults are used.
+        /// </summary>
         public static AppSettings Load(string settingsFilePath)
         {
-            if (!File.Exists(settingsFilePath))
-                return new AppSettings();
-
             try
             {
+                PathHelper.EnsureParentDirectory(settingsFilePath);
+
+                if (!File.Exists(settingsFilePath))
+                {
+                    var defaultSettings = new AppSettings
+                    {
+                        SettingsFilePath = settingsFilePath
+                    };
+
+                    defaultSettings.ApplyDefaults();
+                    defaultSettings.Save();
+
+                    return defaultSettings;
+                }
+
                 string json = File.ReadAllText(settingsFilePath, System.Text.Encoding.UTF8);
 
-                var options = new JsonSerializerOptions
+                if (string.IsNullOrWhiteSpace(json))
                 {
-                    PropertyNameCaseInsensitive = true
+                    var emptySettings = new AppSettings
+                    {
+                        SettingsFilePath = settingsFilePath
+                    };
+
+                    emptySettings.ApplyDefaults();
+                    emptySettings.Save();
+
+                    return emptySettings;
+                }
+
+                var options = BuildSerializerOptions();
+
+                var settings = JsonSerializer.Deserialize<AppSettings>(json, options)
+                    ?? new AppSettings();
+
+                settings.SettingsFilePath = settingsFilePath;
+                settings.ApplyDefaults();
+                settings.Save();
+
+                return settings;
+            }
+            catch
+            {
+                // Fail-safe behavior:
+                // EasySave should still start even if the settings file is corrupted.
+                var fallbackSettings = new AppSettings
+                {
+                    SettingsFilePath = settingsFilePath
                 };
 
-                return JsonSerializer.Deserialize<AppSettings>(json, options)
-                    ?? new AppSettings();
-            }
-            catch (Exception)
-            {
-                // Return defaults rather than crashing on a malformed settings file
-                return new AppSettings();
+                fallbackSettings.ApplyDefaults();
+                fallbackSettings.Save();
+
+                return fallbackSettings;
             }
         }
 
         /// <summary>
-        /// Returns an AppSettings instance with all default values.
-        /// Equivalent to calling Load() with a non-existent file path.
+        /// Saves settings to their current file path.
         /// </summary>
-        public static AppSettings Default() => new AppSettings();
+        public void Save()
+        {
+            SaveAs(SettingsFilePath);
+        }
+
+        /// <summary>
+        /// Saves settings to a specific file path.
+        /// </summary>
+        public void SaveAs(string settingsFilePath)
+        {
+            SettingsFilePath = settingsFilePath;
+
+            PathHelper.EnsureParentDirectory(settingsFilePath);
+
+            var options = BuildSerializerOptions();
+            string json = JsonSerializer.Serialize(this, options);
+
+            File.WriteAllText(settingsFilePath, json, System.Text.Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// Updates the selected log format and persists the change.
+        /// Invalid values automatically fall back to Json.
+        /// </summary>
+        public void SetLogFormat(string format)
+        {
+            if (string.Equals(format, "Xml", StringComparison.OrdinalIgnoreCase))
+            {
+                LogFormat = "Xml";
+            }
+            else
+            {
+                LogFormat = "Json";
+            }
+
+            Save();
+        }
+
+        /// <summary>
+        /// Ensures all settings have safe default values.
+        /// </summary>
+        private void ApplyDefaults()
+        {
+            if (string.IsNullOrWhiteSpace(ConfigFilePath))
+                ConfigFilePath = PathHelper.GetConfigPath();
+
+            if (string.IsNullOrWhiteSpace(StateFilePath))
+                StateFilePath = PathHelper.GetStatePath();
+
+            if (string.IsNullOrWhiteSpace(LogDirectory))
+                LogDirectory = PathHelper.GetLogDirectory();
+
+            if (string.IsNullOrWhiteSpace(LogFormat))
+                LogFormat = "Json";
+
+            if (!string.Equals(LogFormat, "Json", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(LogFormat, "Xml", StringComparison.OrdinalIgnoreCase))
+            {
+                LogFormat = "Json";
+            }
+
+            if (string.IsNullOrWhiteSpace(Language))
+                Language = "en";
+        }
+
+        /// <summary>
+        /// Builds JSON serialization options for settings.json.
+        /// Indentation is enabled for readability in Notepad.
+        /// </summary>
+        private static JsonSerializerOptions BuildSerializerOptions()
+        {
+            return new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+        }
     }
 }

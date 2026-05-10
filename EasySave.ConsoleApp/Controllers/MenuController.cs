@@ -1,69 +1,59 @@
-// EasySave.ConsoleApp/Controllers/MenuController.cs
-
 using EasySave.ConsoleApp.Localization;
 using EasySave.ConsoleApp.Views;
 using EasySave.Core.Services;
+using EasySave.Infrastructure.Configuration;
 
 namespace EasySave.ConsoleApp.Controllers
 {
     /// <summary>
-    /// Handles the logic for each menu option in the interactive console mode.
-    /// Acts as the mediator between the view (IConsoleView) and the domain
-    /// services (JobManager, BackupService).
-    /// Each Handle*() method corresponds to one menu option.
-    /// Contains no display logic — delegates all output to IConsoleView.
+    /// Handles user actions from the interactive console menu.
+    ///
+    /// This controller coordinates:
+    /// - the console view
+    /// - JobManager
+    /// - BackupService
+    /// - application settings
+    ///
+    /// It does not directly perform file copy operations.
     /// </summary>
     public class MenuController
     {
-        // ─────────────────────────────────────────────────────────────
-        // Dependencies
-        // ─────────────────────────────────────────────────────────────
-
-        private readonly JobManager    _jobManager;
+        private readonly JobManager _jobManager;
         private readonly BackupService _backupService;
-        private readonly IConsoleView  _view;
-        private readonly ILocalizer    _localizer;
+        private readonly IConsoleView _view;
+        private readonly ILocalizer _localizer;
+        private readonly AppSettings _settings;
 
-        // ─────────────────────────────────────────────────────────────
-        // Constructor
-        // ─────────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Initializes the controller with all required dependencies.
-        /// </summary>
         public MenuController(
-            JobManager    jobManager,
+            JobManager jobManager,
             BackupService backupService,
-            IConsoleView  view,
-            ILocalizer    localizer)
+            IConsoleView view,
+            ILocalizer localizer,
+            AppSettings settings)
         {
-            _jobManager    = jobManager;
+            _jobManager = jobManager;
             _backupService = backupService;
-            _view          = view;
-            _localizer     = localizer;
+            _view = view;
+            _localizer = localizer;
+            _settings = settings;
         }
 
-        // ─────────────────────────────────────────────────────────────
-        // Menu option handlers
-        // ─────────────────────────────────────────────────────────────
-
         /// <summary>
-        /// Menu option 1 — Displays all configured backup jobs.
+        /// Displays all configured jobs.
         /// </summary>
         public void HandleListJobs()
         {
             var jobs = _jobManager.GetAll();
+
             _view.ShowJobList(jobs);
             _view.WaitForEnter();
         }
 
         /// <summary>
-        /// Menu option 2 — Creates a new backup job from user input.
-        /// Validates the 5-job limit and path accessibility before saving.
+        /// Creates a new backup job.
         /// </summary>
         public void HandleCreateJob()
         {
-            // Check limit before prompting to avoid wasted user input
             if (_jobManager.MaxJobsReached())
             {
                 _view.ShowError(_localizer.Get("error.max.jobs"));
@@ -75,7 +65,12 @@ namespace EasySave.ConsoleApp.Controllers
 
             try
             {
-                _jobManager.Add(form.Name, form.SourcePath, form.TargetPath, form.Type);
+                _jobManager.Add(
+                    form.Name,
+                    form.SourcePath,
+                    form.TargetPath,
+                    form.Type);
+
                 _view.ShowSuccess(_localizer.Get("success.job.created"));
             }
             catch (ArgumentException)
@@ -91,8 +86,7 @@ namespace EasySave.ConsoleApp.Controllers
         }
 
         /// <summary>
-        /// Menu option 3 — Edits an existing backup job.
-        /// Prompts for a job index, then collects updated field values.
+        /// Edits an existing backup job.
         /// </summary>
         public void HandleEditJob()
         {
@@ -104,13 +98,20 @@ namespace EasySave.ConsoleApp.Controllers
             }
 
             _view.ShowJobList(_jobManager.GetAll());
+
             int index = _view.PromptJobIndex(_jobManager.Count);
 
             var form = _view.PromptJobForm();
 
             try
             {
-                _jobManager.Update(index, form.Name, form.SourcePath, form.TargetPath, form.Type);
+                _jobManager.Update(
+                    index,
+                    form.Name,
+                    form.SourcePath,
+                    form.TargetPath,
+                    form.Type);
+
                 _view.ShowSuccess(_localizer.Get("success.job.updated"));
             }
             catch (ArgumentException)
@@ -122,8 +123,7 @@ namespace EasySave.ConsoleApp.Controllers
         }
 
         /// <summary>
-        /// Menu option 4 — Deletes a backup job after confirmation.
-        /// Re-indexes remaining jobs automatically.
+        /// Deletes a selected backup job after confirmation.
         /// </summary>
         public void HandleDeleteJob()
         {
@@ -135,8 +135,10 @@ namespace EasySave.ConsoleApp.Controllers
             }
 
             _view.ShowJobList(_jobManager.GetAll());
-            int index  = _view.PromptJobIndex(_jobManager.Count);
-            var job    = _jobManager.GetByIndex(index);
+
+            int index = _view.PromptJobIndex(_jobManager.Count);
+            var job = _jobManager.GetByIndex(index);
+
             bool confirmed = _view.PromptConfirmDelete(job.Name);
 
             if (!confirmed)
@@ -147,13 +149,13 @@ namespace EasySave.ConsoleApp.Controllers
             }
 
             _jobManager.Delete(index);
+
             _view.ShowSuccess(_localizer.Get("success.job.deleted"));
             _view.WaitForEnter();
         }
 
         /// <summary>
-        /// Menu option 5 — Executes a single backup job selected by the user.
-        /// Displays real-time progress during execution.
+        /// Executes a single selected backup job.
         /// </summary>
         public void HandleExecuteOne()
         {
@@ -165,27 +167,35 @@ namespace EasySave.ConsoleApp.Controllers
             }
 
             _view.ShowJobList(_jobManager.GetAll());
+
             int index = _view.PromptJobIndex(_jobManager.Count);
-            var job   = _jobManager.GetByIndex(index);
+            var job = _jobManager.GetByIndex(index);
 
             Console.WriteLine();
-            Console.WriteLine(string.Format(_localizer.Get("exec.starting"), job.Name));
+            Console.WriteLine(string.Format(
+                _localizer.Get("exec.starting"),
+                job.Name));
 
             try
             {
                 _backupService.ExecuteOne(index);
-                _view.ShowSuccess(string.Format(_localizer.Get("exec.done"), job.Name));
+
+                _view.ShowSuccess(string.Format(
+                    _localizer.Get("exec.done"),
+                    job.Name));
             }
             catch (Exception ex)
             {
-                _view.ShowError(string.Format(_localizer.Get("exec.error"), ex.Message));
+                _view.ShowError(string.Format(
+                    _localizer.Get("exec.error"),
+                    ex.Message));
             }
 
             _view.WaitForEnter();
         }
 
         /// <summary>
-        /// Menu option 6 — Executes all configured backup jobs sequentially.
+        /// Executes all configured jobs sequentially.
         /// </summary>
         public void HandleExecuteAll()
         {
@@ -198,17 +208,40 @@ namespace EasySave.ConsoleApp.Controllers
 
             Console.WriteLine();
             Console.WriteLine(string.Format(
-                _localizer.Get("exec.all.starting"), _jobManager.Count));
+                _localizer.Get("exec.all.starting"),
+                _jobManager.Count));
 
             try
             {
                 _backupService.ExecuteAll();
+
                 _view.ShowSuccess(_localizer.Get("exec.all.done"));
             }
             catch (Exception ex)
             {
-                _view.ShowError(string.Format(_localizer.Get("exec.error"), ex.Message));
+                _view.ShowError(string.Format(
+                    _localizer.Get("exec.error"),
+                    ex.Message));
             }
+
+            _view.WaitForEnter();
+        }
+
+        /// <summary>
+        /// Handles the general settings menu.
+        ///
+        /// In v1.1, the key setting is the daily log format:
+        /// JSON or XML.
+        /// </summary>
+        public void HandleSettings()
+        {
+            string selectedFormat = _view.PromptLogFormat(_settings.LogFormat);
+
+            _settings.SetLogFormat(selectedFormat);
+
+            _view.ShowSuccess(string.Format(
+                _localizer.Get("settings.log.format.updated"),
+                _settings.LogFormat));
 
             _view.WaitForEnter();
         }

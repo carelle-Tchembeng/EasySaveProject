@@ -1,5 +1,3 @@
-// EasySave.ConsoleApp/App.cs
-
 using EasySave.ConsoleApp.Controllers;
 using EasySave.ConsoleApp.Localization;
 using EasySave.ConsoleApp.Parsers;
@@ -10,57 +8,45 @@ namespace EasySave.ConsoleApp
 {
     /// <summary>
     /// Main application orchestrator.
-    /// Determines whether to run in interactive or CLI mode,
-    /// then dispatches to the appropriate execution path.
-    /// Contains no display logic and no business logic —
-    /// delegates entirely to MenuController, BackupService, and IConsoleView.
+    ///
+    /// It decides whether EasySave runs in:
+    /// - interactive console mode
+    /// - command-line mode
+    ///
+    /// This class does not contain backup business logic.
+    /// It only routes execution to the correct services/controllers.
     /// </summary>
     public class App
     {
-        // ─────────────────────────────────────────────────────────────
-        // Dependencies
-        // ─────────────────────────────────────────────────────────────
-
-        private readonly BackupService     _backupService;
-        private readonly JobManager        _jobManager;
-        private readonly IConsoleView      _view;
-        private readonly ILocalizer        _localizer;
-        private readonly MenuController    _menuController;
+        private readonly BackupService _backupService;
+        private readonly JobManager _jobManager;
+        private readonly IConsoleView _view;
+        private readonly ILocalizer _localizer;
+        private readonly MenuController _menuController;
         private readonly CliArgumentParser _parser;
 
-        // ─────────────────────────────────────────────────────────────
-        // Constructor
-        // ─────────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Initializes the application with all required dependencies.
-        /// All parameters are injected from ServiceContainer.Build().
-        /// </summary>
         public App(
-            BackupService     backupService,
-            JobManager        jobManager,
-            IConsoleView      view,
-            ILocalizer        localizer,
-            MenuController    menuController,
+            BackupService backupService,
+            JobManager jobManager,
+            IConsoleView view,
+            ILocalizer localizer,
+            MenuController menuController,
             CliArgumentParser parser)
         {
-            _backupService  = backupService;
-            _jobManager     = jobManager;
-            _view           = view;
-            _localizer      = localizer;
+            _backupService = backupService;
+            _jobManager = jobManager;
+            _view = view;
+            _localizer = localizer;
             _menuController = menuController;
-            _parser         = parser;
+            _parser = parser;
         }
 
-        // ─────────────────────────────────────────────────────────────
-        // Entry point
-        // ─────────────────────────────────────────────────────────────
-
         /// <summary>
-        /// Runs the application.
-        /// Detects the execution mode (interactive vs CLI) and dispatches accordingly.
+        /// Starts the application.
+        ///
+        /// If command-line arguments are provided, CLI mode is used.
+        /// Otherwise, interactive menu mode is used.
         /// </summary>
-        /// <param name="args">Raw CLI arguments from Program.Main().</param>
         public void Run(string[] args)
         {
             if (args.Length == 0)
@@ -69,20 +55,11 @@ namespace EasySave.ConsoleApp
                 RunCli(args);
         }
 
-        // ─────────────────────────────────────────────────────────────
-        // Interactive mode
-        // ─────────────────────────────────────────────────────────────
-
         /// <summary>
-        /// Runs the application in interactive console mode.
-        /// 1. Asks the user to select a language
-        /// 2. Displays the main menu in a loop
-        /// 3. Handles the selected option
-        /// 4. Exits when the user selects "Quit"
+        /// Runs the interactive console menu.
         /// </summary>
         private void RunInteractive()
         {
-            // Language selection at startup
             string lang = _view.AskLanguage();
             _localizer.SetLanguage(lang);
 
@@ -91,6 +68,7 @@ namespace EasySave.ConsoleApp
             while (running)
             {
                 _view.ShowMainMenu();
+
                 string? input = Console.ReadLine()?.Trim();
 
                 switch (input)
@@ -98,25 +76,36 @@ namespace EasySave.ConsoleApp
                     case "1":
                         _menuController.HandleListJobs();
                         break;
+
                     case "2":
                         _menuController.HandleCreateJob();
                         break;
+
                     case "3":
                         _menuController.HandleEditJob();
                         break;
+
                     case "4":
                         _menuController.HandleDeleteJob();
                         break;
+
                     case "5":
                         _menuController.HandleExecuteOne();
                         break;
+
                     case "6":
                         _menuController.HandleExecuteAll();
                         break;
+
                     case "7":
+                        _menuController.HandleSettings();
+                        break;
+
+                    case "8":
                         running = false;
                         Console.WriteLine(_localizer.Get("app.exit"));
                         break;
+
                     default:
                         _view.ShowError(_localizer.Get("menu.invalid"));
                         _view.WaitForEnter();
@@ -125,19 +114,17 @@ namespace EasySave.ConsoleApp
             }
         }
 
-        // ─────────────────────────────────────────────────────────────
-        // CLI mode
-        // ─────────────────────────────────────────────────────────────
-
         /// <summary>
-        /// Runs the application in CLI mode.
-        /// Parses the arguments, resolves the job indices, and executes them.
-        /// No menu is shown — the program runs silently and exits.
+        /// Runs the command-line execution mode.
+        ///
+        /// Supported examples:
+        /// EasySave.exe 1-3
+        /// EasySave.exe 1;3
         /// </summary>
-        /// <param name="args">Raw CLI arguments (e.g. ["1-3"] or ["1;3"]).</param>
         private void RunCli(string[] args)
         {
-            int maxJobs       = _jobManager.Count;
+            int maxJobs = _jobManager.Count;
+
             List<int> indices = _parser.Parse(args, maxJobs);
 
             if (indices.Count == 0)

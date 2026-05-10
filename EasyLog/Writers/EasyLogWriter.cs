@@ -1,5 +1,3 @@
-// EasyLog/Writers/EasyLogWriter.cs
-
 using EasyLog.DTOs;
 using EasyLog.Formatters;
 using EasyLog.Helpers;
@@ -7,161 +5,97 @@ using EasyLog.Helpers;
 namespace EasyLog.Writers
 {
     /// <summary>
-    /// Thread-safe singleton implementation of IEasyLogWriter.
-    /// Writes log entries to daily JSON files in the configured directory.
+    /// Default EasyLog writer implementation.
     ///
-    /// Singleton pattern is justified here because:
-    /// — multiple backup jobs may run sequentially and must share the same log file
-    /// — the file write lock (_lock) must be shared across all callers
-    /// — instantiating multiple writers would cause file access conflicts
+    /// This class writes daily log files using the selected formatter strategy.
     ///
-    /// Usage: EasyLogWriter.GetInstance(options) → IEasyLogWriter
+    /// Important v1.1 design choice:
+    /// The writer is not a singleton anymore.
+    /// This avoids format conflicts when switching between JSON and XML.
     /// </summary>
     public sealed class EasyLogWriter : IEasyLogWriter
     {
-        // ─────────────────────────────────────────────────────────────
-        // Singleton infrastructure
-        // ─────────────────────────────────────────────────────────────
-
         /// <summary>
-        /// The single instance of EasyLogWriter.
-        /// Null until GetInstance() is called for the first time.
+        /// Shared lock used to protect concurrent write access.
         /// </summary>
-        private static EasyLogWriter? _instance;
-
-        /// <summary>
-        /// Lock object used to make singleton initialization thread-safe.
-        /// Separate from _writeLock to avoid deadlocks.
-        /// </summary>
-        private static readonly object _instanceLock = new object();
-
-        /// <summary>
-        /// Lock object used to serialize file write operations.
-        /// Prevents concurrent writes from corrupting the log file.
-        /// </summary>
-        private readonly object _writeLock = new object();
-
-        // ─────────────────────────────────────────────────────────────
-        // Configuration
-        // ─────────────────────────────────────────────────────────────
+        private static readonly object WriteLock = new();
 
         private readonly LogWriterOptions _options;
+        private readonly ILogFormatterStrategy _strategy;
 
-        // ─────────────────────────────────────────────────────────────
-        // Constructor — private to enforce singleton pattern
-        // ─────────────────────────────────────────────────────────────
-
-        private EasyLogWriter(LogWriterOptions options)
+        public EasyLogWriter(LogWriterOptions options, ILogFormatterStrategy strategy)
         {
-            _options = options;
-        }
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
 
-        // ─────────────────────────────────────────────────────────────
-        // Singleton accessor
-        // ─────────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Returns the singleton EasyLogWriter instance.
-        /// Creates it on the first call using the provided options.
-        /// On subsequent calls, the existing instance is returned
-        /// and the options parameter is ignored.
-        /// Thread-safe via double-checked locking.
-        /// </summary>
-        /// <param name="options">Configuration options for the writer.</param>
-        /// <returns>The singleton IEasyLogWriter instance.</returns>
-        /// <exception cref="ArgumentException">
-        /// Thrown if options are invalid on first initialization.
-        /// </exception>
-        public static IEasyLogWriter GetInstance(LogWriterOptions options)
-        {
-            if (_instance != null) return _instance;
-
-            lock (_instanceLock)
-            {
-                if (_instance != null) return _instance;
-
-                // Validate options before creating the instance
-                if (!options.Validate(out string? error))
-                    throw new ArgumentException($"Invalid LogWriterOptions: {error}");
-
-                _instance = new EasyLogWriter(options);
-            }
-
-            return _instance;
+            EnsureLogDirectory();
         }
 
         /// <summary>
-        /// Resets the singleton instance.
-        /// FOR TESTING PURPOSES ONLY — do not call in production code.
+        /// Writes a log entry to the daily log file.
+        ///
+        /// To keep JSON and XML files valid, the method:
+        /// 1. Loads existing entries.
+        /// 2. Adds the new entry.
+        /// 3. Rewrites the full document.
+        ///
+        /// This is simpler and safer for v1.1 than appending raw fragments.
         /// </summary>
-        internal static void ResetForTesting()
-        {
-            lock (_instanceLock)
-            {
-                _instance = null;
-            }
-        }
-
-        // ─────────────────────────────────────────────────────────────
-        // IEasyLogWriter implementation
-        // ─────────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Writes a log entry to today's log file.
-        /// Creates the log directory and file if they do not exist.
-        /// Appends to an existing file if one already exists for today.
-        /// This method is thread-safe.
-        /// </summary>
-        /// <param name="entry">The log entry to write. Must not be null.</param>
         public void Write(LogEntryDto entry)
         {
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
 
-            // Ensure the log directory exists before trying to write
-            EnsureLogDirectory();
-
-            // Build the full path to today's log file
-            string filePath = LogFileNamer.GetFullPath(
-                _options.LogDirectory,
-                DateTime.Now,
-                _options.DateFormat);
-
-            // Serialize the entry to indented JSON
-            string jsonEntry = LogFormatter.FormatEntry(entry);
-
-            // Append newline separator if configured
-            if (_options.AppendNewline)
-                jsonEntry += Environment.NewLine;
-
-            // Serialize file access to prevent concurrent write conflicts
-            lock (_writeLock)
+            lock (WriteLock)
             {
-                AppendToFile(filePath, jsonEntry);
+                string filePath = GetLogFilePath(DateTime.Now);
+
+                List<LogEntryDto> entries = LoadExistingEntries(filePath);
+
+                entries.Add(entry);
+
+                string content = _strategy.FormatEntries(entries);
+
+                File.WriteAllText(filePath, content, System.Text.Encoding.UTF8);
             }
         }
 
         /// <summary>
-        /// Returns the full path of the log file for the specified date.
-        /// The file may not exist yet if no entries have been written for that date.
+        /// Returns the full path of the daily log file for a given date.
         /// </summary>
-        /// <param name="date">Target date.</param>
-        /// <returns>Full absolute path to the log file.</returns>
         public string GetLogFilePath(DateTime date)
         {
             return LogFileNamer.GetFullPath(
                 _options.LogDirectory,
                 date,
+                _strategy.Extension,
                 _options.DateFormat);
         }
 
-        // ─────────────────────────────────────────────────────────────
-        // Private helpers
-        // ─────────────────────────────────────────────────────────────
+        /// <summary>
+        /// Loads entries already present in the daily log file.
+        /// </summary>
+        private List<LogEntryDto> LoadExistingEntries(string filePath)
+        {
+            if (!File.Exists(filePath))
+                return new List<LogEntryDto>();
+
+            try
+            {
+                string content = File.ReadAllText(filePath, System.Text.Encoding.UTF8);
+
+                return _strategy.ParseEntries(content).ToList();
+            }
+            catch
+            {
+                // Logging should never crash the whole application.
+                // If the current log file is corrupted, we restart with an empty list.
+                return new List<LogEntryDto>();
+            }
+        }
 
         /// <summary>
-        /// Creates the log directory if it does not already exist.
-        /// Uses CreateDirectory which is safe to call even if the directory exists.
+        /// Ensures that the log directory exists before writing.
         /// </summary>
         private void EnsureLogDirectory()
         {
@@ -169,18 +103,6 @@ namespace EasyLog.Writers
             {
                 Directory.CreateDirectory(_options.LogDirectory);
             }
-        }
-
-        /// <summary>
-        /// Appends a JSON string to the specified file.
-        /// Creates the file if it does not exist.
-        /// Uses File.AppendAllText which is atomic at the OS level for small writes.
-        /// </summary>
-        /// <param name="filePath">Full path of the target log file.</param>
-        /// <param name="content">JSON string to append.</param>
-        private static void AppendToFile(string filePath, string content)
-        {
-            File.AppendAllText(filePath, content, System.Text.Encoding.UTF8);
         }
     }
 }

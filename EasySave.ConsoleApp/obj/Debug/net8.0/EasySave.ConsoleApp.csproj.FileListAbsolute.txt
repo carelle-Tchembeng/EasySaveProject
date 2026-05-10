@@ -29,3 +29,28 @@ C:\Users\carel\Documents\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\re
 C:\Users\carel\Documents\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\EasySave.ConsoleApp.pdb
 C:\Users\carel\Documents\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\EasySave.ConsoleApp.genruntimeconfig.cache
 C:\Users\carel\Documents\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\ref\EasySave.ConsoleApp.dll
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\EasySave.ConsoleApp.csproj.AssemblyReference.cache
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\EasySave.ConsoleApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\EasySave.ConsoleApp.AssemblyInfoInputs.cache
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\EasySave.ConsoleApp.AssemblyInfo.cs
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\EasySave.ConsoleApp.csproj.CoreCompileInputs.cache
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\EasySave.ConsoleApp.dll
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\refint\EasySave.ConsoleApp.dll
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\EasySave.ConsoleApp.pdb
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.Core.deps.json
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.Core.runtimeconfig.json
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.Core.exe
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.ConsoleApp.exe
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.ConsoleApp.deps.json
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.ConsoleApp.runtimeconfig.json
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.ConsoleApp.dll
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.ConsoleApp.pdb
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasyLog.dll
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.Core.dll
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.Infrastructure.dll
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.Core.pdb
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasySave.Infrastructure.pdb
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\bin\Debug\net8.0\EasyLog.pdb
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\EasySave.50E0DD14.Up2Date
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\EasySave.ConsoleApp.genruntimeconfig.cache
+C:\Users\tchal\Documents\CESI SUPPORT\GL\EasySaveProject\EasySave.ConsoleApp\obj\Debug\net8.0\ref\EasySave.ConsoleApp.dll

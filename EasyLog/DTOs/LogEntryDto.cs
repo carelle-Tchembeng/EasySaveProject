@@ -1,144 +1,120 @@
-// EasyLog/DTOs/LogEntryDto.cs
-
-using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 
 namespace EasyLog.DTOs
 {
     /// <summary>
-    /// Data Transfer Object representing a single log entry.
-    /// This is the only type that crosses the public boundary of the EasyLog DLL.
-    /// All properties use primitive types to ensure easy serialization.
-    /// Consumers should use the factory methods to create instances.
+    /// Data Transfer Object used by the EasyLog DLL.
+    ///
+    /// This object is intentionally independent from EasySave.Core.
+    /// EasyLog must remain reusable by other applications.
+    ///
+    /// The class contains both JSON and XML serialization attributes
+    /// because EasyLog v1.1 supports both formats.
     /// </summary>
+    [XmlRoot("LogEntry")]
     public class LogEntryDto
     {
-        // ─────────────────────────────────────────────────────────────
-        // Properties — all serialized to JSON
-        // ─────────────────────────────────────────────────────────────
-
         /// <summary>
-        /// ISO 8601 timestamp of the file transfer.
-        /// Format: yyyy-MM-dd HH:mm:ss.fff
-        /// Example: 2024-11-15 14:32:01.847
+        /// Timestamp formatted as a human-readable string.
         /// </summary>
         [JsonPropertyName("timestamp")]
-        public string Timestamp { get; init; } = string.Empty;
+        [XmlElement("Timestamp")]
+        public string Timestamp { get; set; } = string.Empty;
 
         /// <summary>
-        /// Name of the backup job that produced this log entry.
+        /// Name of the backup job.
         /// </summary>
         [JsonPropertyName("jobName")]
-        public string JobName { get; init; } = string.Empty;
+        [XmlElement("JobName")]
+        public string JobName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Full UNC path of the source file.
-        /// Example: \\srv01\documents\report.pdf
+        /// UNC source file path.
         /// </summary>
         [JsonPropertyName("sourceFile")]
-        public string SourceFile { get; init; } = string.Empty;
+        [XmlElement("SourceFile")]
+        public string SourceFile { get; set; } = string.Empty;
 
         /// <summary>
-        /// Full UNC path of the destination file after copy.
-        /// Example: \\srv02\backup\documents\report.pdf
+        /// UNC destination file path.
         /// </summary>
         [JsonPropertyName("destFile")]
-        public string DestFile { get; init; } = string.Empty;
+        [XmlElement("DestFile")]
+        public string DestFile { get; set; } = string.Empty;
 
         /// <summary>
-        /// Size of the transferred file in bytes.
+        /// File size in bytes.
         /// </summary>
         [JsonPropertyName("fileSizeBytes")]
-        public long FileSizeBytes { get; init; }
+        [XmlElement("FileSizeBytes")]
+        public long FileSizeBytes { get; set; }
 
         /// <summary>
-        /// Time taken to copy the file in milliseconds.
-        /// Negative value indicates a transfer error.
+        /// File transfer time in milliseconds.
+        /// Negative value means a transfer error occurred.
         /// </summary>
         [JsonPropertyName("transferTimeMs")]
-        public long TransferTimeMs { get; init; }
+        [XmlElement("TransferTimeMs")]
+        public long TransferTimeMs { get; set; }
 
         /// <summary>
-        /// True if the transfer failed (TransferTimeMs is negative).
-        /// Serialized as a boolean in the JSON log for easy filtering.
+        /// Encryption time in milliseconds.
+        ///
+        /// This field is used by EasySave v2.0.
+        /// In EasySave v1.1, it stays at 0.
+        ///
+        /// 0  = no encryption.
+        /// >0 = encryption duration.
+        /// <0 = encryption error.
         /// </summary>
-        [JsonPropertyName("isError")]
-        public bool IsError => TransferTimeMs < 0;
-
-        // ─────────────────────────────────────────────────────────────
-        // Factory methods
-        // ─────────────────────────────────────────────────────────────
+        [JsonPropertyName("cryptoTimeMs")]
+        [XmlElement("CryptoTimeMs")]
+        public long CryptoTimeMs { get; set; } = 0;
 
         /// <summary>
-        /// Creates a LogEntryDto for a successful file transfer.
+        /// Factory method for a successful transfer entry.
         /// </summary>
-        /// <param name="jobName">Name of the backup job.</param>
-        /// <param name="sourceFile">UNC source path.</param>
-        /// <param name="destFile">UNC destination path.</param>
-        /// <param name="fileSizeBytes">File size in bytes.</param>
-        /// <param name="transferTimeMs">Transfer duration in milliseconds.</param>
         public static LogEntryDto Success(
             string jobName,
             string sourceFile,
             string destFile,
-            long   fileSizeBytes,
-            long   transferTimeMs)
+            long fileSizeBytes,
+            long transferTimeMs,
+            long cryptoTimeMs = 0)
         {
             return new LogEntryDto
             {
-                Timestamp      = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-                JobName        = jobName,
-                SourceFile     = sourceFile,
-                DestFile       = destFile,
-                FileSizeBytes  = fileSizeBytes,
-                TransferTimeMs = transferTimeMs
+                Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                JobName = jobName,
+                SourceFile = sourceFile,
+                DestFile = destFile,
+                FileSizeBytes = fileSizeBytes,
+                TransferTimeMs = transferTimeMs,
+                CryptoTimeMs = cryptoTimeMs
             };
         }
 
         /// <summary>
-        /// Creates a LogEntryDto for a failed file transfer.
-        /// TransferTimeMs is set to -1 to signal an error.
+        /// Factory method for a failed transfer entry.
         /// </summary>
-        /// <param name="jobName">Name of the backup job.</param>
-        /// <param name="sourceFile">UNC source path.</param>
-        /// <param name="destFile">UNC destination path.</param>
-        /// <param name="fileSizeBytes">File size in bytes.</param>
         public static LogEntryDto Failure(
             string jobName,
             string sourceFile,
             string destFile,
-            long   fileSizeBytes)
+            long fileSizeBytes,
+            long cryptoTimeMs = 0)
         {
             return new LogEntryDto
             {
-                Timestamp      = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-                JobName        = jobName,
-                SourceFile     = sourceFile,
-                DestFile       = destFile,
-                FileSizeBytes  = fileSizeBytes,
-                TransferTimeMs = -1
+                Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                JobName = jobName,
+                SourceFile = sourceFile,
+                DestFile = destFile,
+                FileSizeBytes = fileSizeBytes,
+                TransferTimeMs = -1,
+                CryptoTimeMs = cryptoTimeMs
             };
-        }
-
-        // ─────────────────────────────────────────────────────────────
-        // Serialization helper
-        // ─────────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Serializes this entry to an indented JSON string.
-        /// The indented format ensures readability in Notepad
-        /// as required by the EasySave specification.
-        /// </summary>
-        /// <param name="options">Optional custom serializer options.</param>
-        /// <returns>Indented JSON string representation of this entry.</returns>
-        public string ToJson(JsonSerializerOptions? options = null)
-        {
-            var defaultOptions = options ?? new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-
-            return JsonSerializer.Serialize(this, defaultOptions);
         }
     }
 }

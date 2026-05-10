@@ -1,102 +1,97 @@
-// EasySave.Infrastructure/Logging/EasyLogAdapter.cs
-
-using EasySave.Core.Interfaces;
-using EasySave.Core.ValueObjects;
 using EasyLog;
 using EasyLog.DTOs;
+using EasyLog.Factory;
+using EasySave.Core.Interfaces;
+using EasySave.Core.ValueObjects;
+using EasySave.Infrastructure.Configuration;
 
 namespace EasySave.Infrastructure.Logging
 {
     /// <summary>
-    /// Adapter that bridges the Core layer's ILogger interface
-    /// and the EasyLog DLL's IEasyLogWriter interface.
+    /// Adapter between the Core logger abstraction and the EasyLog DLL.
     ///
-    /// This class is the only place in the Infrastructure layer
-    /// that knows about both ILogger (Core) and IEasyLogWriter (EasyLog).
-    /// If the EasyLog DLL API changes in a future version,
-    /// only this adapter needs to be updated.
+    /// The Core layer only knows ILogger and LogEntry.
+    /// It must not depend directly on EasyLog.
     ///
-    /// Follows the Adapter design pattern.
+    /// This adapter converts:
+    /// EasySave.Core.ValueObjects.LogEntry
+    /// into:
+    /// EasyLog.DTOs.LogEntryDto
+    ///
+    /// It also creates the correct EasyLog writer depending on the current
+    /// application settings, especially the selected log format: JSON or XML.
     /// </summary>
     public class EasyLogAdapter : ILogger
     {
-        // ─────────────────────────────────────────────────────────────
-        // Dependencies
-        // ─────────────────────────────────────────────────────────────
+        private readonly AppSettings _settings;
 
-        /// <summary>
-        /// The EasyLog DLL writer instance.
-        /// Injected via constructor to maintain testability.
-        /// </summary>
-        private readonly IEasyLogWriter _writer;
-
-        // ─────────────────────────────────────────────────────────────
-        // Constructor
-        // ─────────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Initializes the adapter with an EasyLog writer instance.
-        /// </summary>
-        /// <param name="writer">
-        /// IEasyLogWriter instance obtained from LogWriterFactory.Create().
-        /// Must not be null.
-        /// </param>
-        public EasyLogAdapter(IEasyLogWriter writer)
+        public EasyLogAdapter(AppSettings settings)
         {
-            _writer = writer ?? throw new ArgumentNullException(nameof(writer));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
-        // ─────────────────────────────────────────────────────────────
-        // ILogger implementation
-        // ─────────────────────────────────────────────────────────────
-
         /// <summary>
-        /// Converts a Core LogEntry to an EasyLog LogEntryDto
-        /// and delegates writing to the EasyLog DLL.
+        /// Writes a domain log entry using the EasyLog library.
+        ///
+        /// The writer is created from current settings each time.
+        /// This allows the user to switch log format during application usage
+        /// without restarting the application.
         /// </summary>
-        /// <param name="entry">
-        /// Core log entry produced after a file transfer.
-        /// Must not be null.
-        /// </param>
         public void Log(LogEntry entry)
         {
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
 
-            // Convert Core domain type → EasyLog DTO
             LogEntryDto dto = MapToDto(entry);
 
-            // Delegate to EasyLog DLL
-            _writer.Write(dto);
+            IEasyLogWriter writer = CreateWriterFromCurrentSettings();
+
+            writer.Write(dto);
         }
 
-        // ─────────────────────────────────────────────────────────────
-        // Private mapping
-        // ─────────────────────────────────────────────────────────────
+        /// <summary>
+        /// Creates an EasyLog writer according to the current settings.
+        /// If the configured format is invalid, JSON is used as fallback.
+        /// </summary>
+        private IEasyLogWriter CreateWriterFromCurrentSettings()
+        {
+            bool isValidFormat = Enum.TryParse<LogFormat>(
+                _settings.LogFormat,
+                ignoreCase: true,
+                out LogFormat parsedFormat);
+
+            var options = new LogWriterOptions
+            {
+                LogDirectory = _settings.LogDirectory,
+                Format = isValidFormat ? parsedFormat : LogFormat.Json,
+                IndentOutput = true
+            };
+
+            return LogWriterFactory.Create(options);
+        }
 
         /// <summary>
-        /// Maps a Core LogEntry value object to an EasyLog LogEntryDto.
-        /// Uses the appropriate factory method based on whether the entry is an error.
+        /// Converts the Core LogEntry object into an EasyLog DTO.
         /// </summary>
-        /// <param name="entry">Core log entry to convert.</param>
-        /// <returns>Equivalent LogEntryDto for the EasyLog DLL.</returns>
         private static LogEntryDto MapToDto(LogEntry entry)
         {
             if (entry.IsError)
             {
                 return LogEntryDto.Failure(
-                    jobName       : entry.JobName,
-                    sourceFile    : entry.SourceFile,
-                    destFile      : entry.DestFile,
-                    fileSizeBytes : entry.FileSizeBytes);
+                    jobName: entry.JobName,
+                    sourceFile: entry.SourceFile,
+                    destFile: entry.DestFile,
+                    fileSizeBytes: entry.FileSizeBytes,
+                    cryptoTimeMs: entry.CryptoTimeMs);
             }
 
             return LogEntryDto.Success(
-                jobName        : entry.JobName,
-                sourceFile     : entry.SourceFile,
-                destFile       : entry.DestFile,
-                fileSizeBytes  : entry.FileSizeBytes,
-                transferTimeMs : entry.TransferTimeMs);
+                jobName: entry.JobName,
+                sourceFile: entry.SourceFile,
+                destFile: entry.DestFile,
+                fileSizeBytes: entry.FileSizeBytes,
+                transferTimeMs: entry.TransferTimeMs,
+                cryptoTimeMs: entry.CryptoTimeMs);
         }
     }
 }

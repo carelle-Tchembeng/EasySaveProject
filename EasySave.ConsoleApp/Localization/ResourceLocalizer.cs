@@ -106,7 +106,7 @@ namespace EasySave.ConsoleApp.Localization
                 [French] = new Dictionary<string, string>
                 {
                     // ── Application ──────────────────────────────────
-                    ["app.title"]              = "=== EasySave v1.0 ===",
+                    ["app.title"]              = "=== EasySave v1.1 ===",
                     ["app.language.prompt"]    = "Sélectionnez votre langue / Select your language [fr/en] :",
                     ["app.exit"]               = "Au revoir !",
 
@@ -118,9 +118,13 @@ namespace EasySave.ConsoleApp.Localization
                     ["menu.delete"]            = "4. Supprimer un travail de sauvegarde",
                     ["menu.execute.one"]       = "5. Exécuter un travail de sauvegarde",
                     ["menu.execute.all"]       = "6. Exécuter tous les travaux",
-                    ["menu.quit"]              = "7. Quitter",
-                    ["menu.choice"]            = "Votre choix :",
-                    ["menu.invalid"]           = "Choix invalide. Veuillez réessayer.",
+                    ["menu.settings"] = "7. Paramètres généraux",
+                    ["menu.quit"] = "8. Quitter",
+
+                    ["settings.current.log.format"] = "Format de log actuel : {0}",
+                    ["settings.log.format.prompt"] = "Choisissez le format des logs [1=JSON / 2=XML] :",
+                    ["settings.log.format.invalid"] = "Format invalide. Entrez 1 pour JSON ou 2 pour XML.",
+                    ["settings.log.format.updated"] = "Format des logs mis à jour : {0}",
 
                     // ── Job list ─────────────────────────────────────
                     ["job.list.title"]         = "--- TRAVAUX DE SAUVEGARDE ---",
@@ -162,7 +166,7 @@ namespace EasySave.ConsoleApp.Localization
                 [English] = new Dictionary<string, string>
                 {
                     // ── Application ──────────────────────────────────
-                    ["app.title"]              = "=== EasySave v1.0 ===",
+                    ["app.title"]              = "=== EasySave v1.1 ===",
                     ["app.language.prompt"]    = "Sélectionnez votre langue / Select your language [fr/en] :",
                     ["app.exit"]               = "Goodbye!",
 
@@ -174,9 +178,13 @@ namespace EasySave.ConsoleApp.Localization
                     ["menu.delete"]            = "4. Delete a backup job",
                     ["menu.execute.one"]       = "5. Execute a backup job",
                     ["menu.execute.all"]       = "6. Execute all backup jobs",
-                    ["menu.quit"]              = "7. Quit",
-                    ["menu.choice"]            = "Your choice:",
-                    ["menu.invalid"]           = "Invalid choice. Please try again.",
+                    ["menu.settings"] = "7. General settings",
+                    ["menu.quit"] = "8. Quit",
+
+                    ["settings.current.log.format"] = "Current log format: {0}",
+                    ["settings.log.format.prompt"] = "Choose log format [1=JSON / 2=XML]:",
+                    ["settings.log.format.invalid"] = "Invalid format. Enter 1 for JSON or 2 for XML.",
+                    ["settings.log.format.updated"] = "Log format updated: {0}",
 
                     // ── Job list ─────────────────────────────────────
                     ["job.list.title"]         = "--- BACKUP JOBS ---",

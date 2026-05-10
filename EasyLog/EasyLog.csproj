@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\EasySave.Core\EasySave.Core.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<!-- EasyLog must be compiled as a DLL, not as an executable. -->
+		<TargetFramework>net8.0</TargetFramework>
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+		<!-- Enables common implicit using directives. -->
+		<ImplicitUsings>enable</ImplicitUsings>
+
+		<!-- Enables nullable reference type analysis. -->
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
 </Project>

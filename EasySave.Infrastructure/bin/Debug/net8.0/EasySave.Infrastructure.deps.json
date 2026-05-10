@@ -8,14 +8,14 @@
     ".NETCoreApp,Version=v8.0": {
       "EasySave.Infrastructure/1.0.0": {
         "dependencies": {
-          "EasyLog": "1.0.0.0",
-          "EasySave.Core": "1.0.0.0"
+          "EasyLog": "1.0.0",
+          "EasySave.Core": "1.0.0"
         },
         "runtime": {
           "EasySave.Infrastructure.dll": {}
         }
       },
-      "EasyLog/1.0.0.0": {
+      "EasyLog/1.0.0": {
         "runtime": {
           "EasyLog.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -23,7 +23,7 @@
           }
         }
       },
-      "EasySave.Core/1.0.0.0": {
+      "EasySave.Core/1.0.0": {
         "runtime": {
           "EasySave.Core.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -39,13 +39,13 @@
       "serviceable": false,
       "sha512": ""
     },
-    "EasyLog/1.0.0.0": {
-      "type": "reference",
+    "EasyLog/1.0.0": {
+      "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "EasySave.Core/1.0.0.0": {
-      "type": "reference",
+    "EasySave.Core/1.0.0": {
+      "type": "project",
       "serviceable": false,
       "sha512": ""
     }
