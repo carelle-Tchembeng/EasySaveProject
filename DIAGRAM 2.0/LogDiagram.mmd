@@ -1,0 +1,59 @@
+classDiagram
+    namespace EasyLog.Factory {
+        class LogWriterFactory {
+            +Create(options): IEasyLogWriter$
+        }
+    }
+
+    namespace EasyLog.Writers {
+        class IEasyLogWriter {
+            <<interface>>
+            +Write(entry)
+            +GetLogFilePath(date): string
+        }
+        class EasyLogWriter {
+            -static EasyLogWriter _instance
+            -ILogFormatterStrategy _strategy
+            +GetInstance(options, strategy): EasyLogWriter$
+            +Write(entry)
+        }
+    }
+
+    namespace EasyLog.Formatters {
+        class ILogFormatterStrategy {
+            <<interface>>
+            +Extension: string
+            +FormatEntry(entry): string
+        }
+        class JsonLogFormatterStrategy {
+            +FormatEntry(entry): string
+        }
+        class XmlLogFormatterStrategy {
+            +FormatEntry(entry): string
+        }
+    }
+
+    namespace EasyLog.DTOs {
+        class LogEntryDto {
+            +Timestamp: string
+            +JobName: string
+            +TransferTimeMs: long
+            +CryptoTimeMs: long
+        }
+        class LogWriterOptions {
+            +Format: LogFormat
+            +LogDirectory: string
+        }
+        class LogFormat {
+            <<enumeration>>
+            Json
+            Xml
+        }
+    }
+
+    LogWriterFactory ..> EasyLogWriter : Crée
+    EasyLogWriter ..|> IEasyLogWriter
+    EasyLogWriter --> ILogFormatterStrategy : Utilise
+    JsonLogFormatterStrategy ..|> ILogFormatterStrategy
+    XmlLogFormatterStrategy ..|> ILogFormatterStrategy
+    ILogFormatterStrategy ..> LogEntryDto : Formate

@@ -1,0 +1,55 @@
+classDiagram
+    %% COUCHE VUE (WPF / XAML)
+    namespace EasySave.WPF.Views {
+        class MainWindow {
+            -DataContext: MainViewModel
+        }
+        class JobListView {
+            -DataContext: JobListViewModel
+        }
+    }
+
+    %% COUCHE VIEWMODEL (La colle entre la vue et le modèle)
+    namespace EasySave.WPF.ViewModels {
+        class ViewModelBase {
+            <<abstract>>
+            +event PropertyChanged
+            #OnPropertyChanged(propertyName)
+        }
+        class MainViewModel {
+            +CurrentViewModel: ViewModelBase
+            +NavigateCommand: ICommand
+        }
+        class JobListViewModel {
+            +Jobs: ObservableCollection~BackupJob~
+            +PlayCommand: ICommand
+            +SettingsCommand: ICommand
+            -LoadJobs()
+            -ExecuteJob(job)
+        }
+        class RelayCommand {
+            +Execute(parameter)
+            +CanExecute(parameter): bool
+        }
+    }
+
+    %% COUCHE MODELE (Ton Core actuel !)
+    namespace EasySave.Core.Services {
+        class JobManager {
+            +GetAll(): List~BackupJob~
+        }
+        class BackupService {
+            +ExecuteOne(job)
+        }
+    }
+
+    %% RELATIONS MVVM
+    MainWindow --> MainViewModel : Binding (DataContext)
+    JobListView --> JobListViewModel : Binding (DataContext)
+    
+    MainViewModel --|> ViewModelBase
+    JobListViewModel --|> ViewModelBase
+    JobListViewModel --> RelayCommand : Instancie
+    
+    JobListViewModel --> JobManager : Lit les donnees
+    JobListViewModel --> BackupService : Lance les actions

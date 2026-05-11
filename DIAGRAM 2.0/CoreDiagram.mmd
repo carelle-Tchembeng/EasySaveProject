@@ -1,0 +1,72 @@
+classDiagram
+    namespace EasySave.Core.Entities {
+        class BackupJob {
+            +Id: int
+            +Name: string
+            +SourcePath: string
+            +TargetPath: string
+            +Type: BackupType
+            +Status: BackupStatus
+            +LastFullBackupDate: DateTime?
+            +Progress: BackupProgress
+            +MarkAsCompleted()
+            +MarkAsError()
+        }
+    }
+
+    namespace EasySave.Core.ValueObjects {
+        class BackupProgress {
+            +TotalFiles: int
+            +RemainingFiles: int
+            +ProgressPercent: int
+            +CurrentSourceFile: string
+            +RecalculatePercent()
+        }
+        class LogEntry {
+            +Timestamp: DateTime
+            +JobName: string
+            +FileSizeBytes: long
+            +TransferTimeMs: long
+            +CryptoTimeMs: long
+            +IsError: bool
+            +Success(...) LogEntry$
+            +Failure(...) LogEntry$
+        }
+    }
+
+    namespace EasySave.Core.Interfaces {
+        class IFileSystem { <<interface>> }
+        class ILogger { <<interface>> }
+        class IStateRepository { <<interface>> }
+        class IConfigRepository { <<interface>> }
+        class IBackupStrategy { <<interface>> }
+        class IProcessMonitor { 
+            <<interface>> 
+            +IsBusinessSoftwareRunning(string): bool
+        }
+    }
+
+    namespace EasySave.Core.Services {
+        class JobManager {
+            -IConfigRepository _configRepository
+            -List~BackupJob~ _jobs
+            +Add(job)
+            +Update(index, job)
+            +Delete(index)
+            +GetAll(): List~BackupJob~
+        }
+        class BackupService {
+            -IProcessMonitor _processMonitor
+            +ExecuteOne(index: int)
+            +ExecuteAll()
+        }
+    }
+
+    BackupJob *-- BackupProgress
+    BackupService --> JobManager
+    BackupService --> IFileSystem
+    BackupService --> ILogger
+    BackupService --> IStateRepository
+    BackupService --> IBackupStrategy
+    BackupService --> IProcessMonitor
+    BackupService ..> LogEntry : Crée

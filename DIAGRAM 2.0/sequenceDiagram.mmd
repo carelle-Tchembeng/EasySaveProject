@@ -1,0 +1,45 @@
+sequenceDiagram
+    actor User
+    participant VM as ViewModel (WPF)
+    participant BS as BackupService
+    participant PM as IProcessMonitor
+    participant FS as IFileSystem (ou Stratégie)
+    participant Crypto as CryptoSoft.exe
+    participant Log as ILogger
+
+    User->>VM: Clic sur "Exécuter" (Play)
+    VM->>BS: ExecuteJob(job)
+    
+    %% Vérification initiale du logiciel métier
+    BS->>PM: IsBusinessSoftwareRunning("calc")
+    alt Logiciel détecté avant lancement
+        PM-->>BS: true
+        BS-->>VM: Bloquer le lancement (Log Error)
+    else Logiciel non détecté
+        PM-->>BS: false
+        
+        loop Pour chaque fichier du job
+            %% Vérification pendant la boucle séquentielle
+            BS->>PM: IsBusinessSoftwareRunning("calc")
+            alt Logiciel détecté pendant la copie
+                PM-->>BS: true
+                BS-->>VM: Arrêter la sauvegarde proprement
+                break
+            end
+            
+            %% Copie et cryptage
+            alt Extension dans la liste de cryptage
+                BS->>FS: CopyAndEncryptFile(source, dest)
+                FS->>Crypto: Lancer le processus CryptoSoft
+                Crypto-->>FS: Succès
+                FS-->>BS: TransferTimeMs + CryptoTimeMs
+            else Extension normale
+                BS->>FS: CopyFile(source, dest)
+                FS-->>BS: TransferTimeMs (CryptoTimeMs = 0)
+            end
+            
+            %% Journalisation
+            BS->>Log: Log(LogEntry {CryptoTimeMs, TransferTimeMs})
+        end
+        BS-->>VM: Mise à jour UI (Terminé)
+    end
