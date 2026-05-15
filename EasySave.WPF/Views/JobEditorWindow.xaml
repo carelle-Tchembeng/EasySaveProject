@@ -4,47 +4,38 @@
         Title="Backup Job" Height="340" Width="520"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="#1E1E2E">
+        Background="#F0F4F0">
 
     <Window.Resources>
         <Style x:Key="FormLabel" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#AAAACC"/>
+            <Setter Property="Foreground" Value="#2E7D32"/>
             <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Margin" Value="0,0,12,0"/>
         </Style>
         <Style x:Key="FormTextBox" TargetType="TextBox">
-            <Setter Property="Background" Value="#12122A"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#2D2D4A"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="CaretBrush" Value="White"/>
-        </Style>
-        <Style x:Key="FormComboBox" TargetType="ComboBox">
-            <Setter Property="Background" Value="#12122A"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#2D2D4A"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#212121"/>
+            <Setter Property="BorderBrush" Value="#A5D6A7"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="10,8"/>
             <Setter Property="FontSize" Value="13"/>
         </Style>
         <Style TargetType="ComboBoxItem">
-            <Setter Property="Background" Value="#12122A"/>
-            <Setter Property="Foreground" Value="White"/>
             <Setter Property="Padding" Value="10,8"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#2A3A5A"/>
+                    <Setter Property="Background" Value="#E8F5E9"/>
                 </Trigger>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#4A9EFF"/>
+                    <Setter Property="Background" Value="#C8E6C9"/>
+                    <Setter Property="Foreground" Value="#1B5E20"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="PrimaryButton" TargetType="Button">
-            <Setter Property="Background" Value="#4A9EFF"/>
+            <Setter Property="Background" Value="#2E7D32"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="13"/>
@@ -60,11 +51,10 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#2E7FDD"/>
+                                <Setter Property="Background" Value="#1B5E20"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#3A3A5C"/>
-                                <Setter Property="Foreground" Value="#666688"/>
+                                <Setter Property="Background" Value="#A5D6A7"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -72,12 +62,27 @@
             </Setter>
         </Style>
         <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-            <Setter Property="Background" Value="#2D2D4A"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#3D3D6A"/>
-                </Trigger>
-            </Style.Triggers>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#2E7D32"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="BorderBrush" Value="#2E7D32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E8F5E9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
 
@@ -89,7 +94,7 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Border Grid.Row="0" Background="#12122A">
+        <Border Grid.Row="0" Background="#1B5E20">
             <TextBlock Text="Backup Job" Foreground="White"
                        FontSize="16" FontWeight="Bold"
                        VerticalAlignment="Center" Margin="20,0"/>
@@ -107,7 +112,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="110"/>
+                <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -124,7 +129,9 @@
                      Text="{Binding TargetPath, UpdateSourceTrigger=PropertyChanged}"/>
 
             <TextBlock Grid.Row="6" Grid.Column="0" Text="Backup type :" Style="{StaticResource FormLabel}"/>
-            <ComboBox Grid.Row="6" Grid.Column="1" Style="{StaticResource FormComboBox}"
+            <ComboBox Grid.Row="6" Grid.Column="1"
+                      Background="White" BorderBrush="#A5D6A7"
+                      Padding="10,8" FontSize="13"
                       SelectedItem="{Binding Type}">
                 <ComboBoxItem Content="Full"/>
                 <ComboBoxItem Content="Differential"/>
@@ -132,7 +139,7 @@
         </Grid>
 
         <!-- Buttons -->
-        <Border Grid.Row="2" Background="#12122A" BorderBrush="#2D2D4A" BorderThickness="0,1,0,0">
+        <Border Grid.Row="2" Background="White" BorderBrush="#C8E6C9" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
                         VerticalAlignment="Center" Margin="20,0">
                 <Button Content="Cancel" Style="{StaticResource SecondaryButton}"

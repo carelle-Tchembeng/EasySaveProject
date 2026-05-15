@@ -4,7 +4,7 @@
         xmlns:loc="clr-namespace:EasySave.WPF.Localization"
         Title="{Binding L[app.title]}" Height="650" Width="950"
         MinHeight="450" MinWidth="650"
-        Background="#1E1E2E"
+        Background="#F0F4F0"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -12,7 +12,7 @@
         <loc:BindingProxy x:Key="Proxy" Data="{Binding}"/>
 
         <Style x:Key="PrimaryButton" TargetType="Button">
-            <Setter Property="Background" Value="#4A9EFF"/>
+            <Setter Property="Background" Value="#2E7D32"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="13"/>
@@ -29,14 +29,14 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#2E7FDD"/>
+                                <Setter Property="Background" Value="#1B5E20"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#1A5FAA"/>
+                                <Setter Property="Background" Value="#145214"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#3A3A5C"/>
-                                <Setter Property="Foreground" Value="#666688"/>
+                                <Setter Property="Background" Value="#A5D6A7"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -45,53 +45,73 @@
         </Style>
 
         <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-            <Setter Property="Background" Value="#E05252"/>
+            <Setter Property="Background" Value="#C62828"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#C03A3A"/>
+                    <Setter Property="Background" Value="#B71C1C"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-            <Setter Property="Background" Value="#2D2D4A"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#3D3D6A"/>
-                </Trigger>
-            </Style.Triggers>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#2E7D32"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="BorderBrush" Value="#2E7D32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E8F5E9"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#F5F5F5"/>
+                                <Setter Property="Foreground" Value="#AAAAAA"/>
+                                <Setter Property="BorderBrush" Value="#CCCCCC"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style TargetType="DataGrid">
-            <Setter Property="Background" Value="#16162A"/>
-            <Setter Property="Foreground" Value="#E0E0F0"/>
-            <Setter Property="BorderBrush" Value="#2D2D4A"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#212121"/>
+            <Setter Property="BorderBrush" Value="#C8E6C9"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="GridLinesVisibility" Value="Horizontal"/>
-            <Setter Property="HorizontalGridLinesBrush" Value="#2D2D4A"/>
-            <Setter Property="RowBackground" Value="#1E1E2E"/>
-            <Setter Property="AlternatingRowBackground" Value="#16162A"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#E8F5E9"/>
+            <Setter Property="RowBackground" Value="#FFFFFF"/>
+            <Setter Property="AlternatingRowBackground" Value="#F1F8F1"/>
             <Setter Property="FontSize" Value="13"/>
         </Style>
 
         <Style TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#2D2D4A"/>
-            <Setter Property="Foreground" Value="#4A9EFF"/>
+            <Setter Property="Background" Value="#2E7D32"/>
+            <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Padding" Value="12,10"/>
-            <Setter Property="BorderBrush" Value="#3D3D6A"/>
+            <Setter Property="BorderBrush" Value="#1B5E20"/>
             <Setter Property="BorderThickness" Value="0,0,1,0"/>
         </Style>
 
         <Style TargetType="DataGridRow">
-            <Setter Property="Foreground" Value="#E0E0F0"/>
+            <Setter Property="Foreground" Value="#212121"/>
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#2A3A5A"/>
-                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Background" Value="#C8E6C9"/>
+                    <Setter Property="Foreground" Value="#1B5E20"/>
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#252540"/>
+                    <Setter Property="Background" Value="#E8F5E9"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -121,24 +141,24 @@
         </Grid.RowDefinitions>
 
         <!-- HEADER -->
-        <Border Grid.Row="0" Background="#12122A">
+        <Border Grid.Row="0" Background="#1B5E20">
             <Grid Margin="20,0">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Width="36" Height="36" Background="#4A9EFF" CornerRadius="8" Margin="0,0,12,0">
-                        <TextBlock Text="ES" FontWeight="Bold" FontSize="14"
-                                   Foreground="White" HorizontalAlignment="Center"
+                    <Border Width="38" Height="38" Background="White" CornerRadius="8" Margin="0,0,14,0">
+                        <TextBlock Text="ES" FontWeight="Bold" FontSize="15"
+                                   Foreground="#2E7D32" HorizontalAlignment="Center"
                                    VerticalAlignment="Center"/>
                     </Border>
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="EasySave" FontSize="18" FontWeight="Bold" Foreground="White"/>
-                        <TextBlock Text="v2.0 — ProSoft" FontSize="11" Foreground="#6666AA"/>
+                        <TextBlock Text="EasySave" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Text="v2.0 — ProSoft" FontSize="11" Foreground="#A5D6A7"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
 
         <!-- TOOLBAR -->
-        <Border Grid.Row="1" Background="#1A1A30" BorderBrush="#2D2D4A" BorderThickness="0,0,0,1">
+        <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="#C8E6C9" BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0">
                 <Button Content="{Binding L[btn.run.all]}" Style="{StaticResource PrimaryButton}"
                         Command="{Binding StartAllCommand}"/>
@@ -148,7 +168,7 @@
                         Command="{Binding EditJobCommand}"/>
                 <Button Content="{Binding L[btn.delete]}" Style="{StaticResource DangerButton}"
                         Command="{Binding DeleteJobCommand}"/>
-                <Separator Background="#2D2D4A" Width="1" Height="28" Margin="8,0"/>
+                <Separator Background="#C8E6C9" Width="1" Height="28" Margin="8,0"/>
                 <Button Content="{Binding L[btn.settings]}" Style="{StaticResource SecondaryButton}"
                         Command="{Binding OpenSettingsCommand}"/>
             </StackPanel>
@@ -175,12 +195,12 @@
                 <DataGridTemplateColumn Header="Progress" Width="140">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Grid Margin="8,0">
+                            <Grid Margin="8,4">
                                 <ProgressBar Value="{Binding ProgressPercent}" Maximum="100"
-                                             Height="8" Background="#2D2D4A" Foreground="#4A9EFF"/>
+                                             Height="8" Background="#E8F5E9" Foreground="#2E7D32"/>
                                 <TextBlock Text="{Binding ProgressPercent, StringFormat={}{0}%}"
                                            HorizontalAlignment="Center" FontSize="10"
-                                           Foreground="#AAAACC" Margin="0,10,0,0"/>
+                                           Foreground="#2E7D32" Margin="0,12,0,0"/>
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -189,12 +209,12 @@
         </DataGrid>
 
         <!-- STATUS BAR -->
-        <Border Grid.Row="3" Background="#12122A" BorderBrush="#2D2D4A" BorderThickness="0,1,0,0">
+        <Border Grid.Row="3" Background="#1B5E20">
             <Grid Margin="16,0">
                 <TextBlock Text="{Binding StatusMessage}"
-                           Foreground="#6666AA" FontSize="12" VerticalAlignment="Center"/>
+                           Foreground="#A5D6A7" FontSize="12" VerticalAlignment="Center"/>
                 <ProgressBar Width="100" Height="4" HorizontalAlignment="Right"
-                             IsIndeterminate="True" Foreground="#4A9EFF" Background="#2D2D4A"
+                             IsIndeterminate="True" Foreground="White" Background="#2E7D32"
                              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"/>
             </Grid>
         </Border>
