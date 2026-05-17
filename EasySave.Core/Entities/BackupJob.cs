@@ -1,5 +1,5 @@
 // EasySave.Core/Entities/BackupJob.cs
-// UPDATED v2.0 — Id is now Guid per corrected diagram
+// UPDATED v3.0 — adds MarkAsPaused(), MarkAsResumed() for parallel pause/resume
 
 using EasySave.Core.Enums;
 using EasySave.Core.ValueObjects;
@@ -8,7 +8,7 @@ namespace EasySave.Core.Entities
 {
     /// <summary>
     /// Represents a backup job configured by the user.
-    /// v2.0: Id changed from int to Guid — jobs are now unlimited.
+    /// v3.0: adds Paused state transitions.
     /// </summary>
     public class BackupJob
     {
@@ -30,13 +30,12 @@ namespace EasySave.Core.Entities
         public BackupType Type { get; set; } = BackupType.Full;
 
         /// <summary>
-        /// Date of the last successful full backup.
-        /// Null if no full backup has ever been performed for this job.
+        /// Date of the last successful full backup. Null = no full backup yet.
         /// Used by DifferentialBackupStrategy to filter files.
         /// </summary>
         public DateTime? LastFullBackupDate { get; set; } = null;
 
-        // ─── Runtime state (written to state.json, NOT to config.json) ─
+        // ─── Runtime state (written to state.json, NOT persisted to config.json) ─
 
         /// <summary>Current execution status. Defaults to Inactive.</summary>
         public BackupStatus Status { get; set; } = BackupStatus.Inactive;
@@ -53,9 +52,7 @@ namespace EasySave.Core.Entities
             Progress = null;
         }
 
-        /// <summary>
-        /// Marks the job as active and initializes progress tracking.
-        /// </summary>
+        /// <summary>Marks the job as active and initialises progress tracking.</summary>
         public void MarkAsActive(int totalFiles, long totalSizeBytes)
         {
             Status = BackupStatus.Active;
@@ -72,6 +69,25 @@ namespace EasySave.Core.Entities
         }
 
         /// <summary>
+        /// NEW v3.0 — Marks the job as paused.
+        /// Progress is preserved so execution can resume seamlessly.
+        /// </summary>
+        public void MarkAsPaused()
+        {
+            Status = BackupStatus.Paused;
+            // Progress intentionally NOT reset — resumes from where it stopped.
+        }
+
+        /// <summary>
+        /// NEW v3.0 — Marks the job as resumed (Active again after a pause).
+        /// Progress continues from where it was.
+        /// </summary>
+        public void MarkAsResumed()
+        {
+            Status = BackupStatus.Active;
+        }
+
+        /// <summary>
         /// Marks the job as completed.
         /// Updates LastFullBackupDate if the type is Full.
         /// </summary>
@@ -83,16 +99,14 @@ namespace EasySave.Core.Entities
                 LastFullBackupDate = DateTime.Now;
         }
 
-        /// <summary>Marks the job as failed (copy error or business software interruption).</summary>
+        /// <summary>Marks the job as failed or stopped.</summary>
         public void MarkAsError()
         {
             Status   = BackupStatus.Error;
             Progress = null;
         }
 
-        /// <summary>
-        /// Updates progress after a single file has been copied.
-        /// </summary>
+        /// <summary>Updates progress after a single file has been copied.</summary>
         public void UpdateProgress(long fileSizeBytes, string currentSourceFile, string currentDestFile)
         {
             if (Progress == null) return;

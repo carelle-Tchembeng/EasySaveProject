@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.WPF\\EasySave.WPF.csproj": {}
+    "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.WPF\\EasySave.WPF.csproj": {}
   },
   "projects": {
-    "C:\\Users\\tchal\\Downloads\\v2.0\\EasyLog\\EasyLog.csproj": {
+    "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasyLog\\EasyLog.csproj": {
       "version": "2.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tchal\\Downloads\\v2.0\\EasyLog\\EasyLog.csproj",
+        "projectUniqueName": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasyLog\\EasyLog.csproj",
         "projectName": "EasyLog",
-        "projectPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasyLog\\EasyLog.csproj",
+        "projectPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasyLog\\EasyLog.csproj",
         "packagesPath": "C:\\Users\\tchal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasyLog\\obj\\",
+        "outputPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasyLog\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -31,6 +31,7 @@
         },
         "frameworks": {
           "net8.0": {
+            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {}
           }
@@ -49,15 +50,8 @@
       },
       "frameworks": {
         "net8.0": {
+          "framework": "net8.0",
           "targetAlias": "net8.0",
-          "dependencies": {
-            "Microsoft.NET.ILLink.Tasks": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[8.0.26, )",
-              "autoReferenced": true
-            }
-          },
           "imports": [
             "net461",
             "net462",
@@ -69,20 +63,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -90,21 +70,16 @@
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
         }
-      },
-      "runtimes": {
-        "win-x64": {
-          "#import": []
-        }
       }
     },
-    "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Core\\EasySave.Core.csproj": {
-      "version": "2.0.0",
+    "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj": {
+      "version": "3.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Core\\EasySave.Core.csproj",
+        "projectUniqueName": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj",
         "projectName": "EasySave.Core",
-        "projectPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Core\\EasySave.Core.csproj",
+        "projectPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj",
         "packagesPath": "C:\\Users\\tchal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Core\\obj\\",
+        "outputPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -124,6 +99,7 @@
         },
         "frameworks": {
           "net8.0": {
+            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {}
           }
@@ -142,15 +118,8 @@
       },
       "frameworks": {
         "net8.0": {
+          "framework": "net8.0",
           "targetAlias": "net8.0",
-          "dependencies": {
-            "Microsoft.NET.ILLink.Tasks": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[8.0.26, )",
-              "autoReferenced": true
-            }
-          },
           "imports": [
             "net461",
             "net462",
@@ -162,20 +131,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -183,21 +138,16 @@
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
         }
-      },
-      "runtimes": {
-        "win-x64": {
-          "#import": []
-        }
       }
     },
-    "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj": {
-      "version": "2.0.0",
+    "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj": {
+      "version": "3.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj",
         "projectName": "EasySave.Infrastructure",
-        "projectPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj",
+        "projectPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\tchal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Infrastructure\\obj\\",
+        "outputPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -217,13 +167,14 @@
         },
         "frameworks": {
           "net8.0": {
+            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\tchal\\Downloads\\v2.0\\EasyLog\\EasyLog.csproj": {
-                "projectPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasyLog\\EasyLog.csproj"
+              "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasyLog\\EasyLog.csproj": {
+                "projectPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasyLog\\EasyLog.csproj"
               },
-              "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Core\\EasySave.Core.csproj": {
-                "projectPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Core\\EasySave.Core.csproj"
+              "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj": {
+                "projectPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj"
               }
             }
           }
@@ -242,15 +193,8 @@
       },
       "frameworks": {
         "net8.0": {
+          "framework": "net8.0",
           "targetAlias": "net8.0",
-          "dependencies": {
-            "Microsoft.NET.ILLink.Tasks": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[8.0.26, )",
-              "autoReferenced": true
-            }
-          },
           "imports": [
             "net461",
             "net462",
@@ -262,20 +206,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -283,21 +213,16 @@
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
         }
-      },
-      "runtimes": {
-        "win-x64": {
-          "#import": []
-        }
       }
     },
-    "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.WPF\\EasySave.WPF.csproj": {
-      "version": "2.0.0",
+    "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.WPF\\EasySave.WPF.csproj": {
+      "version": "3.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.WPF\\EasySave.WPF.csproj",
+        "projectUniqueName": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.WPF\\EasySave.WPF.csproj",
         "projectName": "EasySave",
-        "projectPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.WPF\\EasySave.WPF.csproj",
+        "projectPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.WPF\\EasySave.WPF.csproj",
         "packagesPath": "C:\\Users\\tchal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.WPF\\obj\\",
+        "outputPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.WPF\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -316,17 +241,18 @@
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0-windows7.0": {
+          "net8.0-windows": {
+            "framework": "net8.0-windows7.0",
             "targetAlias": "net8.0-windows",
             "projectReferences": {
-              "C:\\Users\\tchal\\Downloads\\v2.0\\EasyLog\\EasyLog.csproj": {
-                "projectPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasyLog\\EasyLog.csproj"
+              "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasyLog\\EasyLog.csproj": {
+                "projectPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasyLog\\EasyLog.csproj"
               },
-              "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Core\\EasySave.Core.csproj": {
-                "projectPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Core\\EasySave.Core.csproj"
+              "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj": {
+                "projectPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Core\\EasySave.Core.csproj"
               },
-              "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj"
+              "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\tchal\\Downloads\\EasySave\\EasySaveProject\\EasySave.Infrastructure\\EasySave.Infrastructure.csproj"
               }
             }
           }
@@ -344,16 +270,9 @@
         "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
-        "net8.0-windows7.0": {
+        "net8.0-windows": {
+          "framework": "net8.0-windows7.0",
           "targetAlias": "net8.0-windows",
-          "dependencies": {
-            "Microsoft.NET.ILLink.Tasks": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[8.0.26, )",
-              "autoReferenced": true
-            }
-          },
           "imports": [
             "net461",
             "net462",
@@ -365,20 +284,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[8.0.26, 8.0.26]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -388,11 +293,6 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "win-x64": {
-          "#import": []
         }
       }
     }

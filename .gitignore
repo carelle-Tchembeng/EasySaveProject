@@ -1,0 +1,7 @@
+.vs/
+*.user
+*.suo
+*.slnx
+*.sqlite
+bin/
+obj/

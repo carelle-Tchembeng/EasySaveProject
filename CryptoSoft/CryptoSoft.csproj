@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>CryptoSoft</AssemblyName>
+    <RootNamespace>CryptoSoft</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Version>3.0.0</Version>
+    <Authors>ProSoft</Authors>
+    <Description>CryptoSoft v3.0 — Outil de chiffrement XOR mono-instance pour EasySave. Un seul exemplaire peut s'exécuter simultanément sur la machine.</Description>
+    <!-- Self-contained : false (requiert .NET 8 Runtime sur la machine cible) -->
+    <!-- Pour publier en autonome : dotnet publish -r win-x64 self-contained true -->
+  </PropertyGroup>
+</Project>

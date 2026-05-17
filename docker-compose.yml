@@ -1,0 +1,36 @@
+# docker-compose.yml — EasySave LogServer v3.0
+# Starts the centralised log service. Logs are persisted in the ./logs volume.
+
+version: "3.9"
+
+services:
+
+  easysave-logserver:
+    build:
+      context: ./EasySave.LogServer
+      dockerfile: Dockerfile
+    container_name: easysave-logserver
+    image: prosoft/easysave-logserver:3.0.0
+    restart: unless-stopped
+    ports:
+      - "5000:5000"         # Host port 5000 → container port 5000
+    volumes:
+      - logserver-data:/logs # Persistent log storage
+    environment:
+      - LOG_DIR=/logs
+      - ASPNETCORE_ENVIRONMENT=Production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  logserver-data:
+    driver: local
+    # To use a custom host path instead:
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: /path/on/host/easysave-logs

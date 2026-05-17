@@ -1,5 +1,5 @@
 // EasySave.Core/Enums/BackupStatus.cs
-// UPDATED v2.0 — aligned with corrected diagram
+// UPDATED v3.0 — added Paused state for parallel pause/resume support
 
 namespace EasySave.Core.Enums
 {
@@ -15,13 +15,19 @@ namespace EasySave.Core.Enums
         /// <summary>Job is currently executing.</summary>
         Active = 1,
 
+        /// <summary>
+        /// NEW v3.0 — Job is paused (business software detected or user-initiated).
+        /// Resumes automatically when business software stops.
+        /// </summary>
+        Paused = 2,
+
         /// <summary>Last execution finished successfully.</summary>
-        Completed = 2,
+        Completed = 3,
 
         /// <summary>
-        /// Last execution failed or was interrupted by business software.
+        /// Last execution failed or was stopped by user.
         /// Check the daily log file for details.
         /// </summary>
-        Error = 3
+        Error = 4
     }
 }

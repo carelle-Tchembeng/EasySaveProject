@@ -13,12 +13,13 @@ using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProSoft")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
-[assembly: System.Reflection.AssemblyDescriptionAttribute("EasySave v2.0 — WPF backup application by ProSoft.")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("2.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.0.0")]
+[assembly: System.Reflection.AssemblyDescriptionAttribute("EasySave v3.0 — WPF backup application: parallel jobs, priority files, pause/resu" +
+    "me/stop, Docker log centralisation.")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("3.0.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("3.0.0+d0bccb8194cd6cc0987d6d2e88acd75f9e04446b")]
 [assembly: System.Reflection.AssemblyProductAttribute("EasySave")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EasySave")]
-[assembly: System.Reflection.AssemblyVersionAttribute("2.0.0.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("3.0.0.0")]
 [assembly: System.Runtime.Versioning.TargetPlatformAttribute("Windows7.0")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("Windows7.0")]
 
