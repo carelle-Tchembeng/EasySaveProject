@@ -1,0 +1,50 @@
+// EasySave.Core/ValueObjects/BackupProgress.cs
+// UNCHANGED from v1.1
+
+namespace EasySave.Core.ValueObjects
+{
+    /// <summary>
+    /// Holds the real-time execution progress of a backup job.
+    /// Produced by BackupService after each file is copied.
+    /// Written to state.json via IStateRepository.
+    /// </summary>
+    public class BackupProgress
+    {
+        /// <summary>Total number of eligible files at the start of execution.</summary>
+        public int TotalFiles { get; set; }
+
+        /// <summary>Total size in bytes of all eligible files.</summary>
+        public long TotalSizeBytes { get; set; }
+
+        /// <summary>Number of files not yet copied.</summary>
+        public int RemainingFiles { get; set; }
+
+        /// <summary>Total size in bytes of files not yet copied.</summary>
+        public long RemainingBytes { get; set; }
+
+        /// <summary>Completion percentage from 0 to 100.</summary>
+        public int ProgressPercent { get; set; }
+
+        /// <summary>Full UNC path of the source file currently being copied.</summary>
+        public string CurrentSourceFile { get; set; } = string.Empty;
+
+        /// <summary>Full UNC path of the destination file currently being copied.</summary>
+        public string CurrentDestFile { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Recalculates ProgressPercent based on TotalFiles and RemainingFiles.
+        /// Call this after updating RemainingFiles.
+        /// </summary>
+        public void RecalculatePercent()
+        {
+            if (TotalFiles == 0)
+            {
+                ProgressPercent = 100;
+                return;
+            }
+
+            int copiedFiles = TotalFiles - RemainingFiles;
+            ProgressPercent = (int)Math.Round((double)copiedFiles / TotalFiles * 100);
+        }
+    }
+}

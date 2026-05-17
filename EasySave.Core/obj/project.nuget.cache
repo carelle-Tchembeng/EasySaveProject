@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "V0/sc6Tp0k8=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\tchal\\Downloads\\v2.0\\EasySave.Core\\EasySave.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\tchal\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.26\\microsoft.net.illink.tasks.8.0.26.nupkg.sha512",
+    "C:\\Users\\tchal\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\8.0.26\\microsoft.netcore.app.runtime.win-x64.8.0.26.nupkg.sha512",
+    "C:\\Users\\tchal\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\8.0.26\\microsoft.windowsdesktop.app.runtime.win-x64.8.0.26.nupkg.sha512",
+    "C:\\Users\\tchal\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\8.0.26\\microsoft.aspnetcore.app.runtime.win-x64.8.0.26.nupkg.sha512"
+  ],
+  "logs": []
+}
