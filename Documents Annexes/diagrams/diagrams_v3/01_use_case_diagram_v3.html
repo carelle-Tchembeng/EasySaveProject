@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EasySave v3.0 — Use Case Diagram</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f8f9fa;color:#2c2c2a}
+  header{background:#3C3489;color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between}
+  header h1{font-size:18px;font-weight:600}
+  header span{font-size:13px;opacity:.75}
+  .container{max-width:1100px;margin:32px auto;padding:0 24px}
+  .card{background:#fff;border-radius:12px;border:1px solid #e0dfd8;padding:32px;margin-bottom:24px}
+  .card h2{font-size:15px;font-weight:600;margin-bottom:20px;color:#3C3489;border-bottom:2px solid #EEEDFE;padding-bottom:10px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:20px}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:#5F5E5A}
+  .ld{width:14px;height:14px;border-radius:50%}
+</style>
+</head>
+<body>
+<header>
+  <h1>EasySave v3.0 — Use Case Diagram</h1>
+  <span>ProSoft · UML · 2024</span>
+</header>
+<div class="container">
+<div class="card">
+<h2>System: EasySave v3.0 — All actors and use cases</h2>
+<div style="overflow-x:auto">
+<svg width="100%" viewBox="0 0 900 1420" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- System boundary -->
+<rect x="150" y="28" width="580" height="1320" rx="12" fill="none" stroke="#888780" stroke-width="1.2" stroke-dasharray="7 3"/>
+<text x="440" y="20" text-anchor="middle" font-size="15" font-weight="600" fill="#3C3489">EasySave v3.0</text>
+
+<!-- ACTOR: Utilisateur -->
+<circle cx="68" cy="700" r="20" fill="none" stroke="#444441" stroke-width="1.5"/>
+<line x1="68" y1="720" x2="68" y2="772" stroke="#444441" stroke-width="1.5"/>
+<line x1="36" y1="748" x2="100" y2="748" stroke="#444441" stroke-width="1.5"/>
+<line x1="68" y1="772" x2="44" y2="808" stroke="#444441" stroke-width="1.5"/>
+<line x1="68" y1="772" x2="92" y2="808" stroke="#444441" stroke-width="1.5"/>
+<text x="68" y="828" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2c2a">Utilisateur</text>
+
+<!-- ACTOR: EasyLog -->
+<circle cx="842" cy="1080" r="20" fill="none" stroke="#444441" stroke-width="1.5"/>
+<line x1="842" y1="1100" x2="842" y2="1152" stroke="#444441" stroke-width="1.5"/>
+<line x1="810" y1="1126" x2="874" y2="1126" stroke="#444441" stroke-width="1.5"/>
+<line x1="842" y1="1152" x2="818" y2="1188" stroke="#444441" stroke-width="1.5"/>
+<line x1="842" y1="1152" x2="866" y2="1188" stroke="#444441" stroke-width="1.5"/>
+<text x="842" y="1208" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2c2a">EasyLog</text>
+<text x="842" y="1222" text-anchor="middle" font-size="11" fill="#888780">«système»</text>
+
+<!-- ACTOR: LogServer Docker -->
+<circle cx="842" cy="1320" r="20" fill="none" stroke="#444441" stroke-width="1.5"/>
+<line x1="842" y1="1340" x2="842" y2="1392" stroke="#444441" stroke-width="1.5"/>
+<line x1="810" y1="1366" x2="874" y2="1366" stroke="#444441" stroke-width="1.5"/>
+<line x1="842" y1="1392" x2="818" y2="1428" stroke="#444441" stroke-width="1.5"/>
+<line x1="842" y1="1392" x2="866" y2="1428" stroke="#444441" stroke-width="1.5"/>
+<text x="842" y="1448" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2c2a">LogServer</text>
+<text x="842" y="1462" text-anchor="middle" font-size="11" fill="#888780">«Docker»</text>
+
+<!-- ═══ SECTION 1: Démarrage ═══ -->
+<text x="440" y="52" text-anchor="middle" font-size="11" fill="#888780">— Démarrage —</text>
+<ellipse cx="300" cy="86" rx="120" ry="26" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="300" y="90" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2c2a">Démarrer l'application</text>
+<ellipse cx="540" cy="86" rx="120" ry="26" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="540" y="90" text-anchor="middle" font-size="13" font-weight="600" fill="#2c2c2a">Sélectionner la langue</text>
+<path d="M420 86 Q462 86 418 86" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text x="472" y="80" text-anchor="middle" font-size="10" fill="#888780">«include»</text>
+<line x1="98" y1="688" x2="180" y2="102" stroke="#888780" stroke-width="1"/>
+
+<!-- ═══ SECTION 2: Gestion travaux ═══ -->
+<text x="440" y="136" text-anchor="middle" font-size="11" fill="#888780">— Gestion des travaux (illimitée) —</text>
+<ellipse cx="270" cy="174" rx="94" ry="26" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.8"/>
+<text x="270" y="178" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Créer un travail</text>
+<ellipse cx="440" cy="174" rx="94" ry="26" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.8"/>
+<text x="440" y="178" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Modifier un travail</text>
+<ellipse cx="614" cy="174" rx="100" ry="26" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.8"/>
+<text x="614" y="178" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Supprimer un travail</text>
+<ellipse cx="440" cy="240" rx="94" ry="26" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.8"/>
+<text x="440" y="244" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Lister les travaux</text>
+<line x1="98" y1="692" x2="176" y2="174" stroke="#888780" stroke-width="1"/>
+<line x1="98" y1="694" x2="188" y2="240" stroke="#888780" stroke-width="1"/>
+
+<!-- ═══ SECTION 3: Paramètres ═══ -->
+<text x="440" y="294" text-anchor="middle" font-size="11" fill="#888780">— Paramètres généraux (v3.0 étendu) —</text>
+<ellipse cx="440" cy="330" rx="145" ry="26" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.8"/>
+<text x="440" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="#633806">Configurer les paramètres</text>
+<ellipse cx="210" cy="400" rx="88" ry="24" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.8"/>
+<text x="210" y="404" text-anchor="middle" font-size="13" font-weight="600" fill="#633806">Choisir format log</text>
+<ellipse cx="370" cy="400" rx="102" ry="24" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.8"/>
+<text x="370" y="404" text-anchor="middle" font-size="13" font-weight="600" fill="#633806">Extensions crypto</text>
+<ellipse cx="546" cy="400" rx="102" ry="24" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.8"/>
+<text x="546" y="404" text-anchor="middle" font-size="13" font-weight="600" fill="#633806">Logiciel métier</text>
+<!-- NEW v3.0 params -->
+<ellipse cx="260" cy="468" rx="114" ry="24" fill="#FAEEDA" stroke="#EF9F27" stroke-width="1.5"/>
+<text x="260" y="472" text-anchor="middle" font-size="13" font-weight="600" fill="#633806">Extensions prioritaires ★</text>
+<ellipse cx="490" cy="468" rx="120" ry="24" fill="#FAEEDA" stroke="#EF9F27" stroke-width="1.5"/>
+<text x="490" y="472" text-anchor="middle" font-size="13" font-weight="600" fill="#633806">Seuil taille parallèle ★</text>
+<ellipse cx="375" cy="536" rx="120" ry="24" fill="#FAEEDA" stroke="#EF9F27" stroke-width="1.5"/>
+<text x="375" y="540" text-anchor="middle" font-size="13" font-weight="600" fill="#633806">Mode centralisation logs ★</text>
+<path d="M318 344 Q262 372 210 376" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<path d="M390 356 Q380 372 370 376" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<path d="M504 344 Q524 372 546 376" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<path d="M330 344 Q290 436 260 444" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<path d="M520 344 Q506 436 490 444" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<path d="M440 356 Q408 504 375 512" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text x="340" y="370" font-size="10" fill="#888780">«include»</text>
+<line x1="98" y1="696" x2="295" y2="336" stroke="#888780" stroke-width="1"/>
+
+<!-- ═══ SECTION 4: Exécution parallèle ═══ -->
+<text x="440" y="592" text-anchor="middle" font-size="11" fill="#888780">— Exécution parallèle (NEW v3.0) —</text>
+<ellipse cx="440" cy="628" rx="148" ry="26" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="440" y="632" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Exécuter sauvegardes (parallèle)</text>
+<ellipse cx="256" cy="700" rx="114" ry="26" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="256" y="704" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Gérer priorité fichiers ★</text>
+<ellipse cx="530" cy="700" rx="124" ry="26" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="530" y="704" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Contrôler transferts (&gt;n Ko) ★</text>
+<ellipse cx="280" cy="772" rx="100" ry="26" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="280" y="776" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Sauvegarde complète</text>
+<ellipse cx="560" cy="772" rx="110" ry="26" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="560" y="776" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Sauvegarde différentielle</text>
+<ellipse cx="440" cy="844" rx="118" ry="26" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="440" y="848" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Copier fichier (src → dest)</text>
+<ellipse cx="440" cy="916" rx="118" ry="26" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="440" y="920" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Mettre à jour state.json</text>
+<path d="M352 642 Q304 672 256 674" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text x="290" y="662" font-size="10" fill="#888780">«include»</text>
+<path d="M520 642 Q526 672 530 674" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text x="540" y="662" font-size="10" fill="#888780">«include»</text>
+<path d="M326 788 Q376 816 410 822" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<path d="M546 788 Q500 816 470 822" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text x="450" y="820" font-size="10" fill="#888780">«include»</text>
+<path d="M440 870 Q440 886 440 890" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text x="450" y="886" font-size="10" fill="#888780">«include»</text>
+<!-- include: Gérer priorité fichiers -> Sauvegarde différentielle -->
+<path d="M310 722 Q440 760 478 752" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text x="372" y="748" font-size="10" fill="#888780">«include»</text>
+<!-- include: Contrôler transferts (>n Ko) -> Sauvegarde complète -->
+<path d="M470 718 Q360 758 332 752" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text x="404" y="734" font-size="10" fill="#888780">«include»</text>
+<line x1="98" y1="700" x2="292" y2="628" stroke="#888780" stroke-width="1"/>
+
+<!-- ═══ SECTION 5: Contrôle temps réel ═══ -->
+<text x="440" y="1044" text-anchor="middle" font-size="11" fill="#888780">— Contrôle temps réel Play/Pause/Stop (NEW v3.0) —</text>
+<ellipse cx="232" cy="1078" rx="98" ry="26" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="232" y="1082" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Mettre en pause ★</text>
+<ellipse cx="440" cy="1078" rx="98" ry="26" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="440" y="1082" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Reprendre (play) ★</text>
+<ellipse cx="644" cy="1078" rx="98" ry="26" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="644" y="1082" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Arrêter (stop) ★</text>
+<ellipse cx="440" cy="1148" rx="128" ry="26" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="440" y="1152" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Contrôle global (tous) ★</text>
+<ellipse cx="440" cy="1218" rx="136" ry="26" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="440" y="1222" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Suivi progression % (temps réel) ★</text>
+<line x1="98" y1="704" x2="134" y2="1078" stroke="#888780" stroke-width="1"/>
+<line x1="98" y1="706" x2="152" y2="1148" stroke="#888780" stroke-width="1"/>
+<line x1="98" y1="708" x2="156" y2="1218" stroke="#888780" stroke-width="1"/>
+
+<!-- ═══ SECTION 7: Logs ═══ -->
+<text x="440" y="1280" text-anchor="middle" font-size="11" fill="#888780">— Journalisation + centralisation Docker (NEW v3.0) —</text>
+<ellipse cx="298" cy="1314" rx="120" ry="26" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="298" y="1318" text-anchor="middle" font-size="13" font-weight="600" fill="#712B13">Journaliser les actions</text>
+<ellipse cx="556" cy="1314" rx="126" ry="26" fill="#FAECE7" stroke="#EF9F27" stroke-width="1.5"/>
+<text x="556" y="1318" text-anchor="middle" font-size="13" font-weight="600" fill="#712B13">Centraliser logs (Docker) ★</text>
+<line x1="810" y1="1092" x2="418" y2="1314" stroke="#888780" stroke-width="1"/>
+<line x1="810" y1="1330" x2="682" y2="1314" stroke="#888780" stroke-width="1"/>
+
+<!-- Légende -->
+<line x1="160" y1="1354" x2="740" y2="1354" stroke="#e0dfd8" stroke-width="0.5"/>
+<circle cx="178" cy="1376" r="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.8"/>
+<text x="192" y="1380" font-size="11" fill="#5F5E5A">Gestion / contrôle</text>
+<circle cx="332" cy="1376" r="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="346" y="1380" font-size="11" fill="#5F5E5A">Exécution parallèle</text>
+<circle cx="482" cy="1376" r="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="496" y="1380" font-size="11" fill="#5F5E5A">Logs / métier</text>
+<circle cx="178" cy="1400" r="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.8"/>
+<text x="192" y="1404" font-size="11" fill="#5F5E5A">Paramètres</text>
+<text x="282" y="1404" font-size="11" fill="#854F0B">★ = nouveau v3.0</text>
+<circle cx="420" cy="1400" r="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="434" y="1404" font-size="11" fill="#5F5E5A">Démarrage</text>
+</svg>
+</div>
+<div class="legend">
+  <div class="legend-item"><div class="ld" style="background:#EEEDFE;border:1px solid #534AB7"></div>Gestion / contrôle utilisateur</div>
+  <div class="legend-item"><div class="ld" style="background:#E1F5EE;border:1px solid #0F6E56"></div>Exécution parallèle</div>
+  <div class="legend-item"><div class="ld" style="background:#FAECE7;border:1px solid #993C1D"></div>Logs / journalisation</div>
+  <div class="legend-item"><div class="ld" style="background:#FAEEDA;border:1px solid #854F0B"></div>Paramètres</div>
+  <div class="legend-item"><span style="color:#854F0B;font-weight:600">★</span> = Nouveau en v3.0</div>
+</div>
+</div>
+</div>
+</body>
+</html>

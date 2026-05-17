@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EasySave v3.0 — Class Diagram: WPF & LogServer</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f8f9fa;color:#2c2c2a}
+  header{background:#444441;color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between}
+  header h1{font-size:18px;font-weight:600}
+  header span{font-size:13px;opacity:.75}
+  .container{max-width:1200px;margin:32px auto;padding:0 24px}
+  .card{background:#fff;border-radius:12px;border:1px solid #e0dfd8;padding:32px;margin-bottom:24px}
+  .card h2{font-size:15px;font-weight:600;margin-bottom:20px;color:#444441;border-bottom:2px solid #F1EFE8;padding-bottom:10px}
+  .diagram-wrap{overflow-x:auto}
+  .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
+  .new{background:#E1F5EE;color:#085041}.updated{background:#FAEEDA;color:#633806}.unchanged{background:#F1EFE8;color:#444441}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{background:#F1EFE8;color:#444441;padding:8px 12px;text-align:left;font-weight:600}
+  td{padding:8px 12px;border-bottom:1px solid #f0efe8;vertical-align:top}
+  td:first-child{font-weight:500;font-family:'Cascadia Code','Consolas',monospace;font-size:12px}
+  tr:hover td{background:#fafaf8}
+  .tabs{display:flex;gap:4px;margin-bottom:20px}
+  .tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #e0dfd8;background:#f8f9fa;color:#5F5E5A}
+  .tab.active{background:#F1EFE8;color:#444441;border-color:#5F5E5A}
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+</style>
+</head>
+<body>
+<header>
+  <h1>EasySave v3.0 — Class Diagram: WPF & LogServer Docker</h1>
+  <span>ProSoft · UML · 2024</span>
+</header>
+<div class="container">
+<div class="card">
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('wpf')">EasySave.WPF</div>
+    <div class="tab" onclick="showTab('logserver')">LogServer (Docker)</div>
+  </div>
+  <div id="tab-wpf" class="tab-content active">
+    <h2>EasySave.WPF — v3.0 updates</h2>
+    <div class="diagram-wrap" id="wpf-container"><p style="color:#888;font-size:13px;padding:16px">Loading…</p></div>
+  </div>
+  <div id="tab-logserver" class="tab-content">
+    <h2>EasySave.LogServer — NEW Docker service</h2>
+    <div class="diagram-wrap" id="logserver-container"><p style="color:#888;font-size:13px;padding:16px">Loading…</p></div>
+  </div>
+</div>
+<div class="card">
+  <h2>Delta v2.0 → v3.0</h2>
+  <table>
+    <tr><th>Layer</th><th>Class</th><th>Status</th><th>Changes</th></tr>
+    <tr><td>WPF</td><td>MainViewModel</td><td><span class="badge updated">Updated</span></td><td>+ PauseAllCommand, ResumeAllCommand, StopAllCommand. Calls BackupService.PauseAll/ResumeAll/StopAll()</td></tr>
+    <tr><td>WPF</td><td>BackupJobViewModel</td><td><span class="badge updated">Updated</span></td><td>+ PauseCommand, ResumeCommand, StopCommand. + Progress bound to BackupJob.Progress.ProgressPercent in real time via IProgress&lt;T&gt;</td></tr>
+    <tr><td>WPF</td><td>SettingsViewModel</td><td><span class="badge updated">Updated</span></td><td>+ PriorityExtensions ObservableCollection. + MaxParallelFileSizeKb. + LogStorageMode selector. + LogServerUrl field</td></tr>
+    <tr><td>WPF</td><td>ViewModelBase</td><td><span class="badge unchanged">Unchanged</span></td><td>No modification</td></tr>
+    <tr><td>WPF</td><td>JobEditorViewModel</td><td><span class="badge unchanged">Unchanged</span></td><td>No modification</td></tr>
+    <tr><td>WPF</td><td>RelayCommand</td><td><span class="badge unchanged">Unchanged</span></td><td>No modification</td></tr>
+    <tr><td>WPF</td><td>LocalizationService</td><td><span class="badge updated">Updated</span></td><td>+ keys for pause/resume/stop, priority extensions, log storage mode</td></tr>
+    <tr><td>LogServer</td><td>LogController</td><td><span class="badge new">NEW</span></td><td>ASP.NET Core controller. POST /api/log receives LogEntryDto. Routes to ILogStorageService.</td></tr>
+    <tr><td>LogServer</td><td>ILogStorageService</td><td><span class="badge new">NEW</span></td><td>AppendLog(LogEntryRemoteDto entry) — single daily file, thread-safe writes.</td></tr>
+    <tr><td>LogServer</td><td>JsonLogStorageService</td><td><span class="badge new">NEW</span></td><td>Appends JSON entries to yyyy-MM-dd.json in /logs volume. Mutex per file. Adds MachineName field.</td></tr>
+    <tr><td>LogServer</td><td>LogEntryRemoteDto</td><td><span class="badge new">NEW</span></td><td>Extends LogEntryDto + MachineName: string + ApplicationVersion: string</td></tr>
+    <tr><td>LogServer</td><td>Program (Docker)</td><td><span class="badge new">NEW</span></td><td>ASP.NET Core minimal API. Dockerfile + docker-compose.yml. Port and /logs volume configurable via env vars.</td></tr>
+  </table>
+</div>
+</div>
+<script>
+function showTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['wpf','logserver'][i]===name));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+}
+</script>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false, theme: 'base', fontFamily: "'Segoe UI',Arial,sans-serif",
+  themeVariables: {
+    darkMode: dark, fontSize: '13px', fontFamily: "'Segoe UI',Arial,sans-serif",
+    lineColor: dark?'#9c9a92':'#73726c', textColor: dark?'#c2c0b6':'#3d3d3a',
+    primaryColor: dark?'#444441':'#F1EFE8', primaryTextColor: dark?'#D3D1C7':'#444441', primaryBorderColor: dark?'#888780':'#5F5E5A',
+    secondaryColor: dark?'#3C3489':'#EEEDFE', secondaryTextColor: dark?'#CECBF6':'#3C3489', secondaryBorderColor: dark?'#7F77DD':'#534AB7',
+    tertiaryColor: dark?'#085041':'#E1F5EE', tertiaryTextColor: dark?'#9FE1CB':'#085041', tertiaryBorderColor: dark?'#1D9E75':'#0F6E56',
+    background:'transparent', classText: dark?'#c2c0b6':'#3d3d3a'
+  }
+});
+
+const wpfDiagram = `classDiagram
+  direction TB
+
+  class MainViewModel {
+    <<view model — UPDATED>>
+    -ObservableCollection~BackupJobViewModel~ _jobs
+    -BackupJobViewModel? _selectedJob
+    -JobManager _jobManager
+    -BackupService _backupService
+    -ISettingsService _settingsService
+    +ICommand StartAllCommand
+    +ICommand AddJobCommand
+    +ICommand EditJobCommand
+    +ICommand DeleteJobCommand
+    +ICommand OpenSettingsCommand
+    +ICommand PauseAllCommand
+    +ICommand ResumeAllCommand
+    +ICommand StopAllCommand
+    +string StatusMessage
+    +bool IsBusy
+    +LoadJobs() void
+    +StartAllAsync() Task
+    -OnPauseAll() void
+    -OnResumeAll() void
+    -OnStopAll() void
+  }
+
+  class BackupJobViewModel {
+    <<view model — UPDATED>>
+    -BackupJob _model
+    -BackupService _backupService
+    +string Name
+    +string SourcePath
+    +string TargetPath
+    +string Status
+    +double Progress
+    +ICommand RunCommand
+    +ICommand PauseCommand
+    +ICommand ResumeCommand
+    +ICommand StopCommand
+    +RunAsync() Task
+    +RefreshFromModel() void
+    -OnPause() void
+    -OnResume() void
+    -OnStop() void
+  }
+
+  class SettingsViewModel {
+    <<view model — UPDATED>>
+    -AppConfiguration _config
+    -IAppConfigRepository _configRepo
+    -EasyLogAdapter _logAdapter
+    +string Language
+    +string LogFormat
+    +string BusinessSoftwareName
+    +string CryptoSoftPath
+    +ObservableCollection~string~ EncryptedExtensions
+    +ObservableCollection~string~ PriorityExtensions
+    +long MaxParallelFileSizeKb
+    +string SelectedLogStorageMode
+    +string LogServerUrl
+    +ICommand SaveSettingsCommand
+    +ICommand AddExtensionCommand
+    +ICommand RemoveExtensionCommand
+    +ICommand AddPriorityExtensionCommand
+    +ICommand RemovePriorityExtensionCommand
+  }
+
+  class ViewModelBase {
+    <<abstract — unchanged>>
+    +OnPropertyChanged(string name) void
+    +SetField~T~(ref T field, T value) bool
+  }
+
+  class RelayCommand {
+    <<command — unchanged>>
+    +Execute(object? param) void
+    +CanExecute(object? param) bool
+  }
+
+  ViewModelBase <|-- MainViewModel
+  ViewModelBase <|-- BackupJobViewModel
+  ViewModelBase <|-- SettingsViewModel
+  MainViewModel --> BackupJobViewModel
+  MainViewModel --> SettingsViewModel
+  MainViewModel --> BackupService
+  MainViewModel --> JobManager
+  BackupJobViewModel --> BackupService
+  SettingsViewModel --> AppConfiguration
+  RelayCommand ..|> ICommand
+`;
+
+const logserverDiagram = `classDiagram
+  direction TB
+
+  class LogEntryRemoteDto {
+    <<DTO — NEW>>
+    +string Timestamp
+    +string JobName
+    +string SourceFile
+    +string DestFile
+    +long FileSizeBytes
+    +long TransferTimeMs
+    +long EncryptionTimeMs
+    +bool IsError
+    +bool IsEncrypted
+    +string MachineName
+    +string ApplicationVersion
+  }
+
+  class ILogStorageService {
+    <<interface — NEW>>
+    +AppendLog(LogEntryRemoteDto entry) Task
+    +GetLogFilePath(DateTime date) string
+  }
+
+  class JsonLogStorageService {
+    <<service — NEW>>
+    -string _logDirectory
+    -ConcurrentDictionary~string,SemaphoreSlim~ _fileLocks
+    -JsonSerializerOptions _options
+    +JsonLogStorageService(string logDirectory)
+    +AppendLog(LogEntryRemoteDto entry) Task
+    +GetLogFilePath(DateTime date) string
+    -EnsureLogDirectory() void
+    -GetOrCreateLock(string filePath) SemaphoreSlim
+  }
+
+  class LogController {
+    <<controller — NEW>>
+    -ILogStorageService _storageService
+    -ILogger~LogController~ _logger
+    +LogController(ILogStorageService storage, ILogger logger)
+    +PostLog(LogEntryRemoteDto entry) Task~IActionResult~
+    +GetStatus() IActionResult
+  }
+
+  class LogServerProgram {
+    <<entry point — NEW>>
+    +Main(string[] args)$ void
+    -ConfigureServices(IServiceCollection services)$ void
+    -ConfigureApp(WebApplication app)$ void
+  }
+
+  ILogStorageService <|.. JsonLogStorageService
+  LogController --> ILogStorageService
+  LogServerProgram --> LogController
+  LogController --> LogEntryRemoteDto
+  JsonLogStorageService --> LogEntryRemoteDto
+`;
+
+const [r1, r2] = await Promise.all([
+  mermaid.render('wpf-v3-svg', wpfDiagram),
+  mermaid.render('logserver-v3-svg', logserverDiagram)
+]);
+document.getElementById('wpf-container').innerHTML = r1.svg;
+document.getElementById('logserver-container').innerHTML = r2.svg;
+
+['wpf-container','logserver-container'].forEach(id => {
+  document.querySelectorAll('#'+id+' svg .node').forEach(node => {
+    const fp = node.querySelector('path[d]');
+    if (!fp) return;
+    const nums = fp.getAttribute('d').match(/-?[\d.]+/g)?.map(Number);
+    if (!nums || nums.length < 8) return;
+    const xs=[nums[0],nums[2],nums[4],nums[6]],ys=[nums[1],nums[3],nums[5],nums[7]];
+    const x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x,h=Math.max(...ys)-y;
+    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x',x);rect.setAttribute('y',y);rect.setAttribute('width',w);rect.setAttribute('height',h);rect.setAttribute('rx','8');
+    for(const a of['fill','stroke','stroke-width','class','style'])if(fp.hasAttribute(a))rect.setAttribute(a,fp.getAttribute(a));
+    fp.replaceWith(rect);
+  });
+});
+</script>
+</body>
+</html>

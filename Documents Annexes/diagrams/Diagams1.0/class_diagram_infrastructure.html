@@ -1,0 +1,189 @@
+<div id="cd-infra"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+    primaryColor: dark ? '#085041' : '#E1F5EE',
+    primaryTextColor: dark ? '#9FE1CB' : '#085041',
+    primaryBorderColor: dark ? '#1D9E75' : '#0F6E56',
+    secondaryColor: dark ? '#3C3489' : '#EEEDFE',
+    secondaryTextColor: dark ? '#CECBF6' : '#3C3489',
+    secondaryBorderColor: dark ? '#7F77DD' : '#534AB7',
+    tertiaryColor: dark ? '#633806' : '#FAEEDA',
+    tertiaryTextColor: dark ? '#FAC775' : '#633806',
+    tertiaryBorderColor: dark ? '#EF9F27' : '#854F0B',
+    classText: dark ? '#c2c0b6' : '#3d3d3a',
+    background: 'transparent',
+  }
+});
+
+const diagram = `classDiagram
+  direction TB
+
+  class IConfigRepository {
+    <<interface>>
+    +Load() List~BackupJob~
+    +Save(List~BackupJob~ jobs) void
+  }
+
+  class IStateRepository {
+    <<interface>>
+    +Update(List~BackupJob~ jobs) void
+    +Clear() void
+  }
+
+  class IFileSystem {
+    <<interface>>
+    +CopyFile(string src, string dest) long
+    +CreateDirectory(string path) void
+    +GetFiles(string path) List~string~
+    +GetDirectories(string path) List~string~
+    +Exists(string path) bool
+    +GetLastWriteTime(string path) DateTime
+    +GetFileSize(string path) long
+  }
+
+  class ILogger {
+    <<interface>>
+    +Log(LogEntry entry) void
+  }
+
+  class JsonConfigRepository {
+    <<repository>>
+    -string _configPath
+    -JsonSerializerOptions _options
+    +JsonConfigRepository(string configPath)
+    +Load() List~BackupJob~
+    +Save(List~BackupJob~ jobs) void
+    -EnsureDirectoryExists() void
+    -Deserialize(string json) List~BackupJob~
+    -Serialize(List~BackupJob~ jobs) string
+  }
+
+  class JsonStateRepository {
+    <<repository>>
+    -string _statePath
+    -JsonSerializerOptions _options
+    +JsonStateRepository(string statePath)
+    +Update(List~BackupJob~ jobs) void
+    +Clear() void
+    -MapToStateEntry(BackupJob job) StateEntry
+    -WriteAtomic(string json) void
+  }
+
+  class StateEntry {
+    <<value object>>
+    +string JobName
+    +DateTime LastActionTime
+    +string Status
+    +int TotalFiles
+    +long TotalSizeBytes
+    +int RemainingFiles
+    +long RemainingBytes
+    +int ProgressPercent
+    +string CurrentSourceFile
+    +string CurrentDestFile
+  }
+
+  class WindowsFileSystem {
+    <<adapter>>
+    +CopyFile(string src, string dest) long
+    +CreateDirectory(string path) void
+    +GetFiles(string path) List~string~
+    +GetDirectories(string path) List~string~
+    +Exists(string path) bool
+    +GetLastWriteTime(string path) DateTime
+    +GetFileSize(string path) long
+    -ToUncPath(string path) string
+    -MeasureTransfer(Action copy) long
+  }
+
+  class EasyLogAdapter {
+    <<adapter>>
+    -IEasyLogWriter _writer
+    +EasyLogAdapter(IEasyLogWriter writer)
+    +Log(LogEntry entry) void
+    -MapToDto(LogEntry entry) LogEntryDto
+  }
+
+  class IEasyLogWriter {
+    <<interface>>
+    +Write(LogEntryDto dto) void
+    +GetLogFilePath(DateTime date) string
+  }
+
+  class LogEntryDto {
+    <<DTO>>
+    +string Timestamp
+    +string JobName
+    +string SourceFile
+    +string DestFile
+    +long FileSizeBytes
+    +long TransferTimeMs
+  }
+
+  class PathHelper {
+    <<static utility>>
+    +GetConfigPath()$ string
+    +GetStatePath()$ string
+    +GetLogDirectory()$ string
+    +ToUncPath(string path)$ string
+    +EnsureDirectory(string path)$ void
+  }
+
+  class AppSettings {
+    <<configuration>>
+    +string ConfigFilePath
+    +string StateFilePath
+    +string LogDirectory
+    +string DefaultLanguage
+    +Load(string settingsPath)$ AppSettings
+  }
+
+  IConfigRepository <|.. JsonConfigRepository : implements
+  IStateRepository <|.. JsonStateRepository : implements
+  IFileSystem <|.. WindowsFileSystem : implements
+  ILogger <|.. EasyLogAdapter : implements
+  EasyLogAdapter --> IEasyLogWriter : delegates to
+  IEasyLogWriter --> LogEntryDto : uses
+  EasyLogAdapter --> LogEntryDto : maps to
+  JsonStateRepository --> StateEntry : produces
+  JsonConfigRepository --> PathHelper : uses
+  JsonStateRepository --> PathHelper : uses
+  WindowsFileSystem --> PathHelper : uses
+  AppSettings --> PathHelper : configures
+`;
+
+const { svg } = await mermaid.render('cd-infra-svg', diagram);
+document.getElementById('cd-infra').innerHTML = svg;
+
+document.querySelectorAll('#cd-infra svg .node').forEach(node => {
+  const firstPath = node.querySelector('path[d]');
+  if (!firstPath) return;
+  const d = firstPath.getAttribute('d');
+  const nums = d.match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs = [nums[0], nums[2], nums[4], nums[6]];
+  const ys = [nums[1], nums[3], nums[5], nums[7]];
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  rect.setAttribute('x', x); rect.setAttribute('y', y);
+  rect.setAttribute('width', w); rect.setAttribute('height', h);
+  rect.setAttribute('rx', '8');
+  for (const a of ['fill','stroke','stroke-width','class','style']) {
+    if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+  }
+  firstPath.replaceWith(rect);
+});
+</script>

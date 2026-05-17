@@ -1,0 +1,131 @@
+<div id="seq3"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: dark ? 'dark' : 'default',
+  sequence: { useMaxWidth: true, actorMargin: 30, messageMargin: 18 },
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '12px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    actorBkg: dark ? '#085041' : '#E1F5EE',
+    actorTextColor: dark ? '#9FE1CB' : '#085041',
+    actorBorder: dark ? '#1D9E75' : '#0F6E56',
+    activationBkgColor: dark ? '#3C3489' : '#EEEDFE',
+    activationBorderColor: dark ? '#7F77DD' : '#534AB7',
+    signalColor: dark ? '#9c9a92' : '#73726c',
+    signalTextColor: dark ? '#c2c0b6' : '#3d3d3a',
+    noteBkgColor: dark ? '#633806' : '#FAEEDA',
+    noteTextColor: dark ? '#FAC775' : '#633806',
+    background: 'transparent',
+  }
+});
+
+const diagram = `sequenceDiagram
+  autonumber
+  participant MC as MenuController
+  participant BS as BackupService
+  participant FBS as FullBackupStrategy
+  participant WFS as WindowsFileSystem
+  participant JSR as JsonStateRepository
+  participant ELA as EasyLogAdapter
+  participant ELW as EasyLogWriter
+
+  MC->>BS: ExecuteOne(index)
+  activate BS
+
+  BS->>BS: ResolveStrategy(job) → FullBackupStrategy
+  BS->>BS: job.Status = Active
+
+  BS->>JSR: Update(jobs)
+  activate JSR
+  JSR->>JSR: MapToStateEntry(job)
+  JSR->>JSR: WriteAtomic(state.json)
+  JSR-->>BS: void
+  deactivate JSR
+
+  BS->>FBS: Execute(job, windowsFileSystem, logger)
+  activate FBS
+
+  FBS->>WFS: GetFiles(job.SourcePath) [récursif]
+  activate WFS
+  WFS-->>FBS: List~string~ fileList
+  deactivate WFS
+
+  FBS->>WFS: GetDirectories(job.SourcePath)
+  activate WFS
+  WFS-->>FBS: List~string~ dirList
+  deactivate WFS
+
+  loop Pour chaque répertoire
+    FBS->>WFS: CreateDirectory(destDir)
+    activate WFS
+    WFS-->>FBS: void
+    deactivate WFS
+  end
+
+  loop Pour chaque fichier
+    FBS->>WFS: GetFileSize(srcFile)
+    activate WFS
+    WFS-->>FBS: long sizeBytes
+    deactivate WFS
+
+    FBS->>WFS: CopyFile(srcFile, destFile)
+    activate WFS
+    WFS->>WFS: Stopwatch.Start()
+    WFS->>WFS: File.Copy(src, dest, overwrite:true)
+    WFS->>WFS: Stopwatch.Stop()
+    WFS-->>FBS: long transferTimeMs
+    deactivate WFS
+
+    FBS->>BS: OnFileCopied(progress)
+    activate BS
+
+    BS->>JSR: Update(jobs)
+    activate JSR
+    JSR->>JSR: MapToStateEntry(job + progress)
+    JSR->>JSR: WriteAtomic(state.json)
+    JSR-->>BS: void
+    deactivate JSR
+
+    BS->>ELA: Log(LogEntry)
+    activate ELA
+    ELA->>ELA: MapToDto(entry)
+    ELA->>ELW: Write(LogEntryDto)
+    activate ELW
+    ELW->>ELW: BuildFilePath(DateTime.Now)
+    ELW->>ELW: AppendToFile(path, json)
+    ELW-->>ELA: void
+    deactivate ELW
+    ELA-->>BS: void
+    deactivate ELA
+
+    deactivate BS
+  end
+
+  FBS->>BS: OnCompleted(job)
+  activate BS
+  BS->>BS: job.LastFullBackupDate = DateTime.Now
+  BS->>BS: job.Status = Completed
+  BS->>JSR: Update(jobs)
+  activate JSR
+  JSR->>JSR: WriteAtomic(state.json)
+  JSR-->>BS: void
+  deactivate JSR
+  deactivate BS
+
+  FBS-->>BS: void
+  deactivate FBS
+
+  BS-->>MC: void
+  deactivate BS
+
+  Note over WFS: CopyFile retourne<br/>valeur négative si erreur
+`;
+
+const { svg } = await mermaid.render('seq3-svg', diagram);
+document.getElementById('seq3').innerHTML = svg;
+</script>

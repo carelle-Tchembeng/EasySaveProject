@@ -1,0 +1,131 @@
+<div id="cd-easylog"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+    primaryColor: dark ? '#712B13' : '#FAECE7',
+    primaryTextColor: dark ? '#F5C4B3' : '#712B13',
+    primaryBorderColor: dark ? '#D85A30' : '#993C1D',
+    secondaryColor: dark ? '#444441' : '#F1EFE8',
+    secondaryTextColor: dark ? '#D3D1C7' : '#444441',
+    secondaryBorderColor: dark ? '#888780' : '#5F5E5A',
+    tertiaryColor: dark ? '#3C3489' : '#EEEDFE',
+    tertiaryTextColor: dark ? '#CECBF6' : '#3C3489',
+    tertiaryBorderColor: dark ? '#7F77DD' : '#534AB7',
+    classText: dark ? '#c2c0b6' : '#3d3d3a',
+    background: 'transparent',
+  }
+});
+
+const diagram = `classDiagram
+  direction TB
+
+  class IEasyLogWriter {
+    <<interface>>
+    +Write(LogEntryDto entry) void
+    +GetLogFilePath(DateTime date) string
+  }
+
+  class EasyLogWriter {
+    <<singleton>>
+    -static EasyLogWriter? _instance
+    -static object _lock
+    -string _logDirectory
+    -JsonSerializerOptions _options
+    -EasyLogWriter(string logDirectory)
+    +GetInstance(string logDirectory)$ EasyLogWriter
+    +Write(LogEntryDto entry) void
+    +GetLogFilePath(DateTime date) string
+    -BuildFilePath(DateTime date) string
+    -AppendToFile(string path, string json) void
+    -EnsureLogDirectory() void
+  }
+
+  class LogEntryDto {
+    <<DTO>>
+    +string Timestamp
+    +string JobName
+    +string SourceFile
+    +string DestFile
+    +long FileSizeBytes
+    +long TransferTimeMs
+    +bool IsError
+    +ToJson(JsonSerializerOptions opts) string
+    +GetFormattedTimestamp() string
+  }
+
+  class LogFileNamer {
+    <<static utility>>
+    +GetFileName(DateTime date)$ string
+    +GetFullPath(string directory, DateTime date)$ string
+    +ParseDateFromFileName(string fileName)$ DateTime
+  }
+
+  class LogFormatter {
+    <<static utility>>
+    +FormatEntry(LogEntryDto entry)$ string
+    +FormatTimestamp(DateTime dt)$ string
+    +FormatSize(long bytes)$ string
+    +FormatDuration(long ms)$ string
+  }
+
+  class LogWriterOptions {
+    <<configuration>>
+    +string LogDirectory
+    +bool IndentJson
+    +bool AppendNewline
+    +string DateFormat
+    +string TimestampFormat
+    +Validate() bool
+  }
+
+  class LogWriterFactory {
+    <<factory>>
+    +Create(LogWriterOptions options)$ IEasyLogWriter
+    -ValidateOptions(LogWriterOptions options) void
+  }
+
+  IEasyLogWriter <|.. EasyLogWriter : implements
+  EasyLogWriter --> LogEntryDto : writes
+  EasyLogWriter --> LogFileNamer : uses
+  EasyLogWriter --> LogFormatter : uses
+  EasyLogWriter --> LogWriterOptions : configured by
+  LogWriterFactory --> IEasyLogWriter : creates
+  LogWriterFactory --> LogWriterOptions : validates
+  LogWriterFactory --> EasyLogWriter : instantiates
+  LogEntryDto --> LogFormatter : formatted by
+`;
+
+const { svg } = await mermaid.render('cd-easylog-svg', diagram);
+document.getElementById('cd-easylog').innerHTML = svg;
+
+document.querySelectorAll('#cd-easylog svg .node').forEach(node => {
+  const firstPath = node.querySelector('path[d]');
+  if (!firstPath) return;
+  const d = firstPath.getAttribute('d');
+  const nums = d.match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs = [nums[0], nums[2], nums[4], nums[6]];
+  const ys = [nums[1], nums[3], nums[5], nums[7]];
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  rect.setAttribute('x', x); rect.setAttribute('y', y);
+  rect.setAttribute('width', w); rect.setAttribute('height', h);
+  rect.setAttribute('rx', '8');
+  for (const a of ['fill','stroke','stroke-width','class','style']) {
+    if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+  }
+  firstPath.replaceWith(rect);
+});
+</script>

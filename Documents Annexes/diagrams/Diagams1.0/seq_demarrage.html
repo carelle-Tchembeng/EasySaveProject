@@ -1,0 +1,118 @@
+<div id="seq1"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: dark ? 'dark' : 'default',
+  sequence: { useMaxWidth: true, actorMargin: 40, messageMargin: 20, boxMargin: 8 },
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '12px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    actorBkg: dark ? '#3C3489' : '#EEEDFE',
+    actorTextColor: dark ? '#CECBF6' : '#3C3489',
+    actorBorder: dark ? '#7F77DD' : '#534AB7',
+    activationBkgColor: dark ? '#085041' : '#E1F5EE',
+    activationBorderColor: dark ? '#1D9E75' : '#0F6E56',
+    signalColor: dark ? '#9c9a92' : '#73726c',
+    signalTextColor: dark ? '#c2c0b6' : '#3d3d3a',
+    labelBoxBkgColor: dark ? '#444441' : '#F1EFE8',
+    labelBoxBorderColor: dark ? '#888780' : '#5F5E5A',
+    labelTextColor: dark ? '#D3D1C7' : '#444441',
+    loopTextColor: dark ? '#D3D1C7' : '#444441',
+    noteBkgColor: dark ? '#633806' : '#FAEEDA',
+    noteTextColor: dark ? '#FAC775' : '#633806',
+    background: 'transparent',
+  }
+});
+
+const diagram = `sequenceDiagram
+  autonumber
+  participant OS as OS / Terminal
+  participant P as Program
+  participant SC as ServiceContainer
+  participant RL as ResourceLocalizer
+  participant CV as ConsoleView
+  participant JCR as JsonConfigRepository
+  participant A as App
+  participant MC as MenuController
+
+  OS->>P: Main(args[])
+  activate P
+
+  P->>SC: Build()
+  activate SC
+  SC->>SC: Register(AppSettings.Load())
+  SC->>SC: Register(JsonConfigRepository)
+  SC->>SC: Register(JsonStateRepository)
+  SC->>SC: Register(WindowsFileSystem)
+  SC->>SC: Register(EasyLogAdapter)
+  SC->>SC: Register(JobManager)
+  SC->>SC: Register(BackupService)
+  SC->>RL: new ResourceLocalizer()
+  activate RL
+  RL->>RL: LoadResources()
+  RL->>RL: DetectSystemLanguage()
+  RL-->>SC: instance
+  deactivate RL
+  SC->>CV: new ConsoleView(localizer)
+  activate CV
+  CV-->>SC: instance
+  deactivate CV
+  SC-->>P: container
+  deactivate SC
+
+  P->>P: DetectCliMode(args)
+  Note right of P: args.Length == 0<br/>→ mode interactif
+
+  P->>A: new App(backupService, jobManager, view, parser)
+  activate A
+  P->>A: Run(args)
+
+  A->>CV: AskLanguage()
+  activate CV
+  CV->>CV: ReadNonEmpty("Select language [fr/en]:")
+  CV-->>A: "fr"
+  deactivate CV
+
+  A->>RL: SetLanguage("fr")
+  activate RL
+  RL->>RL: _currentLang = "fr"
+  RL-->>A: void
+  deactivate RL
+
+  A->>JCR: Load()
+  activate JCR
+  JCR->>JCR: EnsureDirectoryExists()
+  JCR->>JCR: Deserialize(json)
+  JCR-->>A: List~BackupJob~
+  deactivate JCR
+
+  A->>A: RunInteractive()
+
+  loop Menu principal actif
+    A->>MC: ShowMenu()
+    activate MC
+    MC->>CV: ShowMainMenu()
+    activate CV
+    CV->>CV: Console.WriteLine(localizer.Get("menu.title"))
+    CV-->>MC: void
+    deactivate CV
+    MC->>CV: PromptJobIndex(max)
+    activate CV
+    CV-->>MC: choix utilisateur
+    deactivate CV
+    MC->>A: HandleChoice(choix)
+    A-->>MC: void
+    deactivate MC
+  end
+
+  deactivate A
+  deactivate P
+`;
+
+const { svg } = await mermaid.render('seq1-svg', diagram);
+document.getElementById('seq1').innerHTML = svg;
+</script>

@@ -1,0 +1,104 @@
+<div id="seq2"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: dark ? 'dark' : 'default',
+  sequence: { useMaxWidth: true, actorMargin: 40, messageMargin: 20 },
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '12px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    actorBkg: dark ? '#3C3489' : '#EEEDFE',
+    actorTextColor: dark ? '#CECBF6' : '#3C3489',
+    actorBorder: dark ? '#7F77DD' : '#534AB7',
+    activationBkgColor: dark ? '#085041' : '#E1F5EE',
+    activationBorderColor: dark ? '#1D9E75' : '#0F6E56',
+    signalColor: dark ? '#9c9a92' : '#73726c',
+    signalTextColor: dark ? '#c2c0b6' : '#3d3d3a',
+    noteBkgColor: dark ? '#633806' : '#FAEEDA',
+    noteTextColor: dark ? '#FAC775' : '#633806',
+    background: 'transparent',
+  }
+});
+
+const diagram = `sequenceDiagram
+  autonumber
+  participant U as Utilisateur
+  participant MC as MenuController
+  participant CV as ConsoleView
+  participant JM as JobManager
+  participant WFS as WindowsFileSystem
+  participant JCR as JsonConfigRepository
+
+  U->>MC: Choisit "Créer un travail"
+  activate MC
+
+  MC->>JM: MaxJobsReached()
+  activate JM
+  JM-->>MC: false
+  deactivate JM
+
+  MC->>CV: PromptJobForm()
+  activate CV
+  CV->>U: Saisir nom du travail
+  U-->>CV: "Backup_Docs"
+  CV->>CV: ReadNonEmpty("Nom:")
+  CV->>U: Saisir répertoire source
+  U-->>CV: "\\\\srv01\\docs"
+  CV->>CV: ReadNonEmpty("Source:")
+  CV->>U: Saisir répertoire cible
+  U-->>CV: "\\\\srv02\\backup"
+  CV->>CV: ReadNonEmpty("Cible:")
+  CV->>U: Choisir type [1=Complet / 2=Diff]
+  U-->>CV: "1"
+  CV->>CV: ReadBackupType()
+  CV-->>MC: BackupJobFormData
+  deactivate CV
+
+  MC->>JM: ValidatePaths("\\\\srv01\\docs", "\\\\srv02\\backup")
+  activate JM
+  JM->>WFS: Exists("\\\\srv01\\docs")
+  activate WFS
+  WFS-->>JM: true
+  deactivate WFS
+  JM->>WFS: Exists("\\\\srv02\\backup")
+  activate WFS
+  WFS-->>JM: true
+  deactivate WFS
+  JM-->>MC: true
+  deactivate JM
+
+  MC->>JM: Add(BackupJob)
+  activate JM
+  JM->>JM: _jobs.Add(job)
+  JM->>JCR: Save(List~BackupJob~)
+  activate JCR
+  JCR->>JCR: EnsureDirectoryExists()
+  JCR->>JCR: Serialize(jobs)
+  JCR->>JCR: File.WriteAllText(config.json)
+  JCR-->>JM: void
+  deactivate JCR
+  JM-->>MC: void
+  deactivate JM
+
+  MC->>CV: ShowSuccess("Travail créé avec succès")
+  activate CV
+  CV->>U: Affiche message de succès
+  CV-->>MC: void
+  deactivate CV
+  deactivate MC
+
+  Note over JM,JCR: config.json mis à jour<br/>avec le nouveau travail
+
+  alt MaxJobsReached() == true
+    MC->>CV: ShowError("Limite de 5 travaux atteinte")
+    CV->>U: Affiche message d'erreur
+  end
+`;
+
+const { svg } = await mermaid.render('seq2-svg', diagram);
+document.getElementById('seq2').innerHTML = svg;
+</script>

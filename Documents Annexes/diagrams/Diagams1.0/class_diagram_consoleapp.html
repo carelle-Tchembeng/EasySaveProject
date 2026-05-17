@@ -1,0 +1,180 @@
+<div id="cd-console"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+    primaryColor: dark ? '#444441' : '#F1EFE8',
+    primaryTextColor: dark ? '#D3D1C7' : '#444441',
+    primaryBorderColor: dark ? '#888780' : '#5F5E5A',
+    secondaryColor: dark ? '#085041' : '#E1F5EE',
+    secondaryTextColor: dark ? '#9FE1CB' : '#085041',
+    secondaryBorderColor: dark ? '#1D9E75' : '#0F6E56',
+    tertiaryColor: dark ? '#3C3489' : '#EEEDFE',
+    tertiaryTextColor: dark ? '#CECBF6' : '#3C3489',
+    tertiaryBorderColor: dark ? '#7F77DD' : '#534AB7',
+    classText: dark ? '#c2c0b6' : '#3d3d3a',
+    background: 'transparent',
+  }
+});
+
+const diagram = `classDiagram
+  direction TB
+
+  class Program {
+    <<entry point>>
+    +Main(string[] args)$ void
+    -Bootstrap() ServiceContainer
+    -DetectCliMode(string[] args) bool
+  }
+
+  class ServiceContainer {
+    <<DI container>>
+    -Dictionary~Type,object~ _services
+    +Register~T~(T instance) void
+    +Resolve~T~() T
+    +Build()$ ServiceContainer
+  }
+
+  class App {
+    <<application>>
+    -BackupService _backupService
+    -JobManager _jobManager
+    -IConsoleView _view
+    -CliArgumentParser _parser
+    +App(BackupService svc, JobManager mgr, IConsoleView view, CliArgumentParser parser)
+    +Run(string[] args) void
+    -RunInteractive() void
+    -RunCli(string[] args) void
+  }
+
+  class IConsoleView {
+    <<interface>>
+    +ShowMainMenu() void
+    +ShowJobList(List~BackupJob~ jobs) void
+    +ShowSuccess(string message) void
+    +ShowError(string message) void
+    +ShowProgress(BackupProgress progress) void
+    +PromptJobForm() BackupJobFormData
+    +PromptJobIndex(int max) int
+    +PromptConfirmDelete(string name) bool
+    +AskLanguage() string
+  }
+
+  class ConsoleView {
+    <<view>>
+    -ILocalizer _localizer
+    +ConsoleView(ILocalizer localizer)
+    +ShowMainMenu() void
+    +ShowJobList(List~BackupJob~ jobs) void
+    +ShowSuccess(string message) void
+    +ShowError(string message) void
+    +ShowProgress(BackupProgress progress) void
+    +PromptJobForm() BackupJobFormData
+    +PromptJobIndex(int max) int
+    +PromptConfirmDelete(string name) bool
+    +AskLanguage() string
+    -ReadNonEmpty(string prompt) string
+    -ReadBackupType() BackupType
+    -ClearLine() void
+  }
+
+  class BackupJobFormData {
+    <<DTO>>
+    +string Name
+    +string SourcePath
+    +string TargetPath
+    +BackupType Type
+  }
+
+  class CliArgumentParser {
+    <<parser>>
+    +Parse(string[] args) List~int~
+    -ParseRange(string token) List~int~
+    -ParseList(string token) List~int~
+    -IsRange(string token) bool
+    -IsList(string token) bool
+    -ValidateIndex(int index, int max) bool
+  }
+
+  class ILocalizer {
+    <<interface>>
+    +Get(string key) string
+    +SetLanguage(string culture) void
+    +CurrentLanguage() string
+  }
+
+  class ResourceLocalizer {
+    <<localizer>>
+    -Dictionary~string, Dictionary~string,string~~ _resources
+    -string _currentLang
+    +ResourceLocalizer()
+    +Get(string key) string
+    +SetLanguage(string culture) void
+    +CurrentLanguage() string
+    -LoadResources() void
+    -DetectSystemLanguage() string
+  }
+
+  class MenuController {
+    <<controller>>
+    -JobManager _jobManager
+    -BackupService _backupService
+    -IConsoleView _view
+    +MenuController(JobManager mgr, BackupService svc, IConsoleView view)
+    +HandleCreateJob() void
+    +HandleEditJob() void
+    +HandleDeleteJob() void
+    +HandleListJobs() void
+    +HandleExecuteOne() void
+    +HandleExecuteAll() void
+  }
+
+  Program --> ServiceContainer : builds
+  Program --> App : creates and runs
+  ServiceContainer --> App : resolves
+  App --> MenuController : delegates to
+  App --> CliArgumentParser : uses
+  App --> IConsoleView : uses
+  MenuController --> JobManager : manages jobs via
+  MenuController --> BackupService : executes via
+  MenuController --> IConsoleView : renders via
+  IConsoleView <|.. ConsoleView : implements
+  ConsoleView --> ILocalizer : translates via
+  ConsoleView --> BackupJobFormData : produces
+  ILocalizer <|.. ResourceLocalizer : implements
+  CliArgumentParser --> App : parsed indices to
+`;
+
+const { svg } = await mermaid.render('cd-console-svg', diagram);
+document.getElementById('cd-console').innerHTML = svg;
+
+document.querySelectorAll('#cd-console svg .node').forEach(node => {
+  const firstPath = node.querySelector('path[d]');
+  if (!firstPath) return;
+  const d = firstPath.getAttribute('d');
+  const nums = d.match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs = [nums[0], nums[2], nums[4], nums[6]];
+  const ys = [nums[1], nums[3], nums[5], nums[7]];
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  rect.setAttribute('x', x); rect.setAttribute('y', y);
+  rect.setAttribute('width', w); rect.setAttribute('height', h);
+  rect.setAttribute('rx', '8');
+  for (const a of ['fill','stroke','stroke-width','class','style']) {
+    if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+  }
+  firstPath.replaceWith(rect);
+});
+</script>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EasySave v3.0 — Sequence Diagrams</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f8f9fa;color:#2c2c2a}
+  header{background:#3C3489;color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between}
+  header h1{font-size:18px;font-weight:600}
+  header span{font-size:13px;opacity:.75}
+  .container{max-width:1200px;margin:32px auto;padding:0 24px}
+  .card{background:#fff;border-radius:12px;border:1px solid #e0dfd8;padding:32px;margin-bottom:24px}
+  .card.seq1 h2{color:#085041;border-bottom:2px solid #E1F5EE;padding-bottom:10px;margin-bottom:6px}
+  .card.seq2 h2{color:#712B13;border-bottom:2px solid #FAECE7;padding-bottom:10px;margin-bottom:6px}
+  .subtitle{font-size:12px;color:#888780;margin-bottom:20px}
+  .diagram-wrap{overflow-x:auto}
+  .info-box{padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;margin-bottom:18px;line-height:1.6}
+  .info-teal{background:#E1F5EE;border-left:4px solid #0F6E56;color:#085041}
+  .info-coral{background:#FAECE7;border-left:4px solid #993C1D;color:#712B13}
+  .steps{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+  .step{background:#f8f9fa;border-radius:8px;padding:12px 16px;font-size:12px;border:1px solid #e0dfd8}
+  .step strong{display:block;font-size:13px;margin-bottom:4px;color:#2c2c2a}
+  .step span{color:#5F5E5A}
+</style>
+</head>
+<body>
+<header>
+  <h1>EasySave v3.0 — Sequence Diagrams</h1>
+  <span>ProSoft · UML · 2024 — 2 scénarios les plus importants</span>
+</header>
+<div class="container">
+
+<!-- ═══ SEQUENCE 1: Exécution parallèle avec priorités et mutex ═══ -->
+<div class="card seq1">
+  <h2>Séquence 1 — Exécution parallèle avec priorité fichiers et mutex gros fichiers</h2>
+  <p class="subtitle">Scénario : 2 jobs tournent en parallèle — Job A traite un fichier .xlsx prioritaire, Job B attend puis transfère</p>
+  <div class="info-box info-teal">
+    Ce scénario illustre les deux mécanismes de synchronisation inter-threads les plus complexes de la v3.0 : le PriorityManager (SemaphoreSlim) qui bloque les non-prioritaires et le LargeFileTransferLock (SemaphoreSlim(1,1)) qui sérialise les gros fichiers.
+  </div>
+  <div class="diagram-wrap" id="seq1-container"><p style="color:#888;font-size:13px;padding:16px">Loading…</p></div>
+  <div class="steps">
+    <div class="step"><strong>Démarrage parallèle</strong><span>BackupService lance Task.WhenAll() — Job A et Job B démarrent simultanément dans des threads séparés.</span></div>
+    <div class="step"><strong>Fichier prioritaire (.xlsx)</strong><span>Job A enregistre le fichier .xlsx comme prioritaire via PriorityManager.RegisterFile(). Le compteur passe à 1.</span></div>
+    <div class="step"><strong>Blocage du non-prioritaire</strong><span>Job B veut copier image.png (non-prioritaire). PriorityManager.WaitIfNonPriority() bloque Job B tant que le compteur > 0.</span></div>
+    <div class="step"><strong>Mutex gros fichier</strong><span>Job A veut copier archive.zip (>n Ko). LargeFileTransferLock.Acquire() prend le mutex. Job B voudrait aussi un gros fichier mais doit attendre.</span></div>
+    <div class="step"><strong>Libération en cascade</strong><span>Job A termine archive.zip → Release() mutex. Job A termine .xlsx → ReleaseFile() → compteur 0 → Job B débloqué.</span></div>
+    <div class="step"><strong>Callback unifié</strong><span>Après chaque fichier : mise à jour state.json + log local + log Docker (selon LogStorageMode) + mise à jour ProgressBar WPF.</span></div>
+  </div>
+</div>
+
+<!-- ═══ SEQUENCE 2: Pause auto logiciel métier + reprise ═══ -->
+<div class="card seq2">
+  <h2>Séquence 2 — Pause automatique sur détection logiciel métier et reprise automatique</h2>
+  <p class="subtitle">Scénario : 3 jobs parallèles, l'utilisateur lance la calculatrice, tous se pausent, il la ferme, tous reprennent</p>
+  <div class="info-box info-coral">
+    Ce scénario illustre le thread de surveillance dédié (watcher) qui poll Process.GetProcessesByName() toutes les 500ms et déclenche PauseAll()/ResumeAll() automatiquement — comportement radicalement différent de la v2.0 qui bloquait définitivement.
+  </div>
+  <div class="diagram-wrap" id="seq2-container"><p style="color:#888;font-size:13px;padding:16px">Loading…</p></div>
+  <div class="steps">
+    <div class="step"><strong>Thread watcher dédié</strong><span>BackupService.StartBusinessSoftwareWatcher() lance un thread de surveillance qui poll IsRunning() toutes les 500ms pendant toute l'exécution.</span></div>
+    <div class="step"><strong>Détection et PauseAll()</strong><span>Le watcher détecte calc.exe → appelle PauseAll() → chaque JobExecutionContext.PauseEvent.Reset() → les threads de job se bloquent après leur fichier courant.</span></div>
+    <div class="step"><strong>Fin du fichier en cours</strong><span>Chaque job termine la copie du fichier en cours avant de vérifier le PauseEvent — cohérence des données garantie.</span></div>
+    <div class="step"><strong>Reprise automatique</strong><span>Le watcher détecte que calc.exe est fermé → ResumeAll() → chaque PauseEvent.Set() → les threads reprennent là où ils en étaient.</span></div>
+    <div class="step"><strong>Aucune erreur générée</strong><span>Contrairement à v2.0, la pause/reprise ne génère pas de statut Error — le job continue normalement après reprise.</span></div>
+    <div class="step"><strong>Log de l'événement</strong><span>Chaque pause et reprise est consignée dans le log journalier (local et/ou Docker selon LogStorageMode).</span></div>
+  </div>
+</div>
+
+</div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+
+const tvTeal = {
+  darkMode: dark, fontSize: '12px', fontFamily: "'Segoe UI',Arial,sans-serif",
+  actorBkg: dark?'#085041':'#E1F5EE', actorTextColor: dark?'#9FE1CB':'#085041', actorBorder: dark?'#1D9E75':'#0F6E56',
+  activationBkgColor: dark?'#3C3489':'#EEEDFE', activationBorderColor: dark?'#7F77DD':'#534AB7',
+  signalColor: dark?'#9c9a92':'#73726c', signalTextColor: dark?'#c2c0b6':'#3d3d3a',
+  noteBkgColor: dark?'#633806':'#FAEEDA', noteTextColor: dark?'#FAC775':'#633806', background:'transparent'
+};
+const tvCoral = {
+  darkMode: dark, fontSize: '12px', fontFamily: "'Segoe UI',Arial,sans-serif",
+  actorBkg: dark?'#712B13':'#FAECE7', actorTextColor: dark?'#F5C4B3':'#712B13', actorBorder: dark?'#D85A30':'#993C1D',
+  activationBkgColor: dark?'#444441':'#F1EFE8', activationBorderColor: dark?'#888780':'#5F5E5A',
+  signalColor: dark?'#9c9a92':'#73726c', signalTextColor: dark?'#c2c0b6':'#3d3d3a',
+  noteBkgColor: dark?'#3C3489':'#EEEDFE', noteTextColor: dark?'#CECBF6':'#3C3489', background:'transparent'
+};
+
+mermaid.initialize({ startOnLoad: false, theme: 'default', fontFamily: "'Segoe UI',Arial,sans-serif" });
+
+const seq1 = `sequenceDiagram
+  autonumber
+  participant VM as MainViewModel
+  participant BS as BackupService
+  participant PM as PriorityManager
+  participant LFL as LargeFileTransferLock
+  participant JA as JobA Thread
+  participant JB as JobB Thread
+  participant WFS as WindowsFileSystem
+  participant JSR as JsonStateRepository
+  participant ELA as EasyLogAdapter
+
+  VM->>BS: StartAllAsync()
+  activate BS
+  BS->>PM: (initialize shared instance)
+  BS->>LFL: (initialize shared instance)
+
+  Note over BS: Task.WhenAll() — both jobs start in parallel
+
+  BS->>JA: ExecuteJob(jobA) [Task]
+  BS->>JB: ExecuteJob(jobB) [Task]
+  activate JA
+  activate JB
+
+  Note over JA,JB: Both threads run concurrently
+
+  JA->>PM: RegisterFile("rapport.xlsx", isPriority=true)
+  activate PM
+  PM->>PM: _pendingPriorityCount++ → 1
+  PM-->>JA: registered
+  deactivate PM
+
+  JB->>PM: WaitIfNonPriority("image.png", ct)
+  activate PM
+  PM->>PM: HasPendingPriority() → true → Wait()
+  Note right of PM: Job B thread BLOCKED here
+
+  JA->>WFS: CopyFile("rapport.xlsx", dest)
+  activate WFS
+  WFS-->>JA: transferTimeMs = 42
+  deactivate WFS
+
+  JA->>PM: ReleaseFile("rapport.xlsx")
+  PM->>PM: _pendingPriorityCount-- → 0 → Set()
+  PM-->>JB: unblocked ✓
+  deactivate PM
+
+  Note over JA: Job A now processes archive.zip (large file)
+
+  JA->>LFL: Acquire(size=512MB, ct)
+  activate LFL
+  LFL->>LFL: IsLargeFile(512MB) → true → semaphore.Wait()
+  LFL-->>JA: mutex acquired ✓
+  deactivate LFL
+
+  JB->>LFL: Acquire(size=200MB, ct)
+  activate LFL
+  LFL->>LFL: semaphore already taken → Wait()
+  Note right of LFL: Job B BLOCKED on large file mutex
+
+  JA->>WFS: CopyFile("archive.zip", dest)
+  activate WFS
+  WFS-->>JA: transferTimeMs = 8420
+  deactivate WFS
+
+  JA->>LFL: Release()
+  activate LFL
+  LFL->>LFL: semaphore.Release() → Job B unblocked ✓
+  LFL-->>JB: mutex acquired ✓
+  deactivate LFL
+
+  JA->>BS: onFileCopied(progress)
+  activate BS
+  BS->>JSR: Update(jobs)
+  activate JSR
+  JSR-->>BS: void
+  deactivate JSR
+  BS->>ELA: Log(LogEntry)
+  activate ELA
+  ELA->>ELA: RouteLog() → local + Docker
+  ELA-->>BS: void
+  deactivate ELA
+  deactivate BS
+
+  JB->>WFS: CopyFile("backup200.bak", dest)
+  activate WFS
+  WFS-->>JB: transferTimeMs = 3100
+  deactivate WFS
+  JB->>LFL: Release()
+
+  Note over JA,JB: Both jobs complete their remaining files normally
+
+  JA-->>BS: void (completed)
+  JB-->>BS: void (completed)
+  deactivate JA
+  deactivate JB
+
+  BS-->>VM: all tasks done
+  deactivate BS
+`;
+
+const seq2 = `sequenceDiagram
+  autonumber
+  participant OS as OS / Watcher Thread
+  participant BS as BackupService
+  participant BSD as BusinessSoftwareDetector
+  participant JA as Job A Thread
+  participant JB as Job B Thread
+  participant JC as Job C Thread
+  participant WFS as WindowsFileSystem
+  participant ELA as EasyLogAdapter
+
+  Note over BS: ExecuteAll() — 3 jobs in parallel + watcher started
+
+  BS->>OS: StartBusinessSoftwareWatcher()
+  activate OS
+  Note right of OS: Polls IsRunning() every 500ms
+
+  BS->>JA: ExecuteJob(jobA) [Task]
+  BS->>JB: ExecuteJob(jobB) [Task]
+  BS->>JC: ExecuteJob(jobC) [Task]
+  activate JA
+  activate JB
+  activate JC
+
+  loop Normal execution
+    JA->>WFS: CopyFile(fileA1)
+    JB->>WFS: CopyFile(fileB1)
+    JC->>WFS: CopyFile(fileC1)
+  end
+
+  Note over OS: User launches calc.exe
+
+  OS->>BSD: IsRunning("calc")
+  activate BSD
+  BSD->>BSD: Process.GetProcessesByName("calc") → found
+  BSD-->>OS: true
+  deactivate BSD
+
+  OS->>BS: CheckAndPauseForBusinessSoftware()
+  activate BS
+  BS->>BS: PauseAll()
+  BS->>JA: ctx.PauseEvent.Reset()
+  BS->>JB: ctx.PauseEvent.Reset()
+  BS->>JC: ctx.PauseEvent.Reset()
+  BS->>ELA: Log(BusinessSoftwarePausedAll)
+  activate ELA
+  ELA-->>BS: void
+  deactivate ELA
+  deactivate BS
+
+  Note over JA: Finishes current file then checks PauseEvent
+  JA->>WFS: CopyFile(fileA2) [current file — completes normally]
+  activate WFS
+  WFS-->>JA: transferTimeMs
+  deactivate WFS
+  JA->>JA: ctx.PauseEvent.Wait(ct) → BLOCKED
+
+  Note over JB,JC: Same — finish current file then block on PauseEvent
+  JB->>JB: ctx.PauseEvent.Wait(ct) → BLOCKED
+  JC->>JC: ctx.PauseEvent.Wait(ct) → BLOCKED
+
+  Note over OS: User closes calc.exe
+
+  OS->>BSD: IsRunning("calc")
+  activate BSD
+  BSD-->>OS: false
+  deactivate BSD
+
+  OS->>BS: CheckAndPauseForBusinessSoftware()
+  activate BS
+  BS->>BS: ResumeAll()
+  BS->>JA: ctx.PauseEvent.Set()
+  BS->>JB: ctx.PauseEvent.Set()
+  BS->>JC: ctx.PauseEvent.Set()
+  BS->>ELA: Log(BusinessSoftwareResumedAll)
+  activate ELA
+  ELA-->>BS: void
+  deactivate ELA
+  deactivate BS
+
+  Note over JA,JC: All threads unblock and resume normally — no Error status
+
+  JA->>WFS: CopyFile(fileA3)
+  JB->>WFS: CopyFile(fileB2)
+  JC->>WFS: CopyFile(fileC2)
+
+  JA-->>BS: completed ✓
+  JB-->>BS: completed ✓
+  JC-->>BS: completed ✓
+  deactivate JA
+  deactivate JB
+  deactivate JC
+  deactivate OS
+`;
+
+const tv1 = {...tvTeal};
+const tv2 = {...tvCoral};
+
+mermaid.initialize({ startOnLoad: false, theme: 'default', fontFamily: "'Segoe UI',Arial,sans-serif",
+  themeVariables: tv1 });
+const r1 = await mermaid.render('seq1-svg', seq1);
+document.getElementById('seq1-container').innerHTML = r1.svg;
+
+mermaid.initialize({ startOnLoad: false, theme: 'default', fontFamily: "'Segoe UI',Arial,sans-serif",
+  themeVariables: tv2 });
+const r2 = await mermaid.render('seq2-svg', seq2);
+document.getElementById('seq2-container').innerHTML = r2.svg;
+</script>
+</body>
+</html>
