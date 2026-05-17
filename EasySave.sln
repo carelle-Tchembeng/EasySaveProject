@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.5.11709.299 stable
+VisualStudioVersion = 18.5.11709.299
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyLog", "EasyLog\EasyLog.csproj", "{11111111-1111-1111-1111-111111111111}"
 EndProject
@@ -9,6 +9,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySave.Infrastructure", "EasySave.Infrastructure\EasySave.Infrastructure.csproj", "{33333333-3333-3333-3333-333333333333}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySave.WPF", "EasySave.WPF\EasySave.WPF.csproj", "{44444444-4444-4444-4444-444444444444}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoSoft", "CryptoSoft\CryptoSoft.csproj", "{BF663037-5330-49FC-90C2-2EDB0B25A443}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,8 +34,15 @@ Global
 		{44444444-4444-4444-4444-444444444444}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44444444-4444-4444-4444-444444444444}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44444444-4444-4444-4444-444444444444}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF663037-5330-49FC-90C2-2EDB0B25A443}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF663037-5330-49FC-90C2-2EDB0B25A443}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF663037-5330-49FC-90C2-2EDB0B25A443}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF663037-5330-49FC-90C2-2EDB0B25A443}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F94F1A1C-F22F-4CA9-A7DF-3B5816AA4EB0}
 	EndGlobalSection
 EndGlobal

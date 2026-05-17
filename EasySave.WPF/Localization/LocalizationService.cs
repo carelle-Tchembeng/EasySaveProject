@@ -77,7 +77,8 @@ namespace EasySave.WPF.Localization
                 ["col.name"] = "Nom",
                 ["col.source"] = "Source",
                 ["col.target"] = "Cible",
-                ["col.status"] = "État"
+                ["col.status"] = "État",
+                ["col.progress"] = "Progression"
             },
             [English] = new Dictionary<string, string>
             {
@@ -104,7 +105,8 @@ namespace EasySave.WPF.Localization
                 ["col.name"] = "Name",
                 ["col.source"] = "Source",
                 ["col.target"] = "Target",
-                ["col.status"] = "Status"
+                ["col.status"] = "Status",
+                ["col.progress"] = "Progress"
             }
         };
     }

@@ -192,7 +192,7 @@
                                     Binding="{Binding TargetPath}" Width="*"/>
                 <DataGridTextColumn Header="{Binding Data.L[col.status], Source={StaticResource Proxy}}"
                                     Binding="{Binding Status}" Width="110"/>
-                <DataGridTemplateColumn Header="Progress" Width="140">
+                <DataGridTemplateColumn Header="{Binding Data.L[col.progress], Source={StaticResource Proxy}}" Width="140">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid Margin="8,4">

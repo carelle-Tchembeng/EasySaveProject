@@ -44,7 +44,7 @@ namespace EasySave.Infrastructure.Encryption
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = _config.CryptoSoftPath,
-                    Arguments = $"\"{filePath}\"",
+                    Arguments = "\"" + filePath + "\"",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -56,11 +56,17 @@ namespace EasySave.Infrastructure.Encryption
                 using var process = Process.Start(startInfo);
                 if (process == null) return -1;
 
+                string output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
                 sw.Stop();
 
-                // Non-zero exit code means encryption failed
-                return process.ExitCode == 0 ? sw.ElapsedMilliseconds : -process.ExitCode;
+                if (process.ExitCode != 0) return -process.ExitCode;
+
+                // Lire le temps depuis la sortie standard
+                if (long.TryParse(output.Trim(), out long encMs))
+                    return encMs;
+
+                return sw.ElapsedMilliseconds;
             }
             catch { return -1; }
         }
