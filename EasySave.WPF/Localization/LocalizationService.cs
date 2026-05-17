@@ -1,5 +1,5 @@
 // EasySave.WPF/Localization/LocalizationService.cs
-// UPDATED v3.0 — new keys: pause/resume/stop, priority extensions, log storage modes
+// UPDATED v3.0 — new keys: pause/resume/stop, priority extensions, log storage modes, job editor, settings sections
 
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -96,6 +96,23 @@ namespace EasySave.WPF.Localization
                 ["col.status"]            = "État",
                 ["col.progress"]          = "Progression",
                 ["col.actions"]           = "Actions",          // NEW v3.0
+                // ── Toolbar — label "Tous les travaux" ────────────────────
+                ["toolbar.all.jobs"]        = "Tous les travaux :",
+                // ── Job editor dialog ──────────────────────────────────────
+                ["job.editor.title"]        = "Éditeur de travail",
+                ["job.field.name"]          = "Nom :",
+                ["job.field.source"]        = "Chemin source :",
+                ["job.field.target"]        = "Chemin cible :",
+                ["job.field.type"]          = "Type de sauvegarde :",
+                ["job.type.full"]           = "Complète",
+                ["job.type.differential"]   = "Différentielle",
+                // ── Settings sections ──────────────────────────────────────
+                ["settings.section.general"]    = "GÉNÉRAL",
+                ["settings.section.security"]   = "SÉCURITÉ",
+                ["settings.section.parallel"]   = "TRANSFERTS PARALLÈLES",
+                ["settings.section.log.docker"] = "CENTRALISATION DES LOGS (DOCKER)",
+                ["settings.hint.parallel"]      = "Les fichiers plus grands que ce seuil utilisent un verrou d'exclusion mutuelle (0 = désactivé).",
+                ["settings.hint.log.server"]    = "Exemple : http://logserver:5000 (laisser vide pour désactiver les logs distants)",
                 // ── Errors ────────────────────────────────────────────────
                 ["error.business.software"] = "Logiciel métier détecté. Sauvegardes mises en pause."
             },
@@ -146,6 +163,23 @@ namespace EasySave.WPF.Localization
                 ["col.status"]            = "Status",
                 ["col.progress"]          = "Progress",
                 ["col.actions"]           = "Actions",          // NEW v3.0
+                // ── Toolbar — label "All jobs" ─────────────────────────────
+                ["toolbar.all.jobs"]        = "All jobs:",
+                // ── Job editor dialog ──────────────────────────────────────
+                ["job.editor.title"]        = "Backup Job",
+                ["job.field.name"]          = "Name:",
+                ["job.field.source"]        = "Source path:",
+                ["job.field.target"]        = "Target path:",
+                ["job.field.type"]          = "Backup type:",
+                ["job.type.full"]           = "Full",
+                ["job.type.differential"]   = "Differential",
+                // ── Settings sections ──────────────────────────────────────
+                ["settings.section.general"]    = "GENERAL",
+                ["settings.section.security"]   = "SECURITY",
+                ["settings.section.parallel"]   = "PARALLEL TRANSFERS",
+                ["settings.section.log.docker"] = "LOG CENTRALISATION (DOCKER)",
+                ["settings.hint.parallel"]      = "Files larger than this threshold use a mutual-exclusion lock (0 = disabled).",
+                ["settings.hint.log.server"]    = "Example: http://logserver:5000  (leave empty to disable remote logging)",
                 // ── Errors ────────────────────────────────────────────────
                 ["error.business.software"] = "Business software detected. Backups paused."
             }

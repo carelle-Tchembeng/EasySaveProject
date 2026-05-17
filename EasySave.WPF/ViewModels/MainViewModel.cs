@@ -170,7 +170,7 @@ namespace EasySave.WPF.ViewModels
         // ── Private helpers ────────────────────────────────────────
         private void OnAddJob()
         {
-            var editorVM = new JobEditorViewModel(_jobManager);
+            var editorVM = new JobEditorViewModel(_jobManager, _localizationService);
             editorVM.Closed += (_, saved) => { if (saved) LoadJobs(); };
             OpenJobEditorRequested?.Invoke(this, editorVM);
         }
@@ -179,7 +179,7 @@ namespace EasySave.WPF.ViewModels
         {
             if (SelectedJob == null) return;
             var job = _jobManager.GetById(SelectedJob.Id);
-            var editorVM = new JobEditorViewModel(_jobManager, job);
+            var editorVM = new JobEditorViewModel(_jobManager, _localizationService, job);
             editorVM.Closed += (_, saved) => { if (saved) LoadJobs(); };
             OpenJobEditorRequested?.Invoke(this, editorVM);
         }

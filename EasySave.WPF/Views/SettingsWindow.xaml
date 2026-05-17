@@ -126,7 +126,7 @@
             <StackPanel>
 
                 <!-- GENERAL -->
-                <TextBlock Text="GENERAL" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="{Binding L[settings.section.general]}" Style="{StaticResource SectionTitle}"/>
                 <Grid Margin="0,0,0,6">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="170"/>
@@ -152,7 +152,7 @@
                 </Grid>
 
                 <!-- SECURITY -->
-                <TextBlock Text="SECURITY" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="{Binding L[settings.section.security]}" Style="{StaticResource SectionTitle}"/>
                 <Grid Margin="0,0,0,6">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="170"/>
@@ -212,7 +212,7 @@
                 </Grid>
 
                 <!-- PARALLEL TRANSFERS (NEW v3.0) -->
-                <TextBlock Text="PARALLEL TRANSFERS" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="{Binding L[settings.section.parallel]}" Style="{StaticResource SectionTitle}"/>
                 <Grid Margin="0,0,0,6">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="170"/>
@@ -223,10 +223,10 @@
                              Text="{Binding MaxParallelFileSizeKb, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
                 <TextBlock Foreground="#888780" FontSize="11" Margin="0,0,0,4"
-                           Text="Files larger than this threshold use a mutual-exclusion lock (0 = disabled)."/>
+                           Text="{Binding L[settings.hint.parallel]}"/>
 
                 <!-- LOG CENTRALISATION (NEW v3.0) -->
-                <TextBlock Text="LOG CENTRALISATION (DOCKER)" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="{Binding L[settings.section.log.docker]}" Style="{StaticResource SectionTitle}"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="170"/>
@@ -249,7 +249,7 @@
                              Text="{Binding LogServerUrl, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
                 <TextBlock Foreground="#888780" FontSize="11" Margin="0,6,0,8"
-                           Text="Example: http://logserver:5000  (leave empty to disable remote logging)"/>
+                           Text="{Binding L[settings.hint.log.server]}"/>
 
             </StackPanel>
         </ScrollViewer>

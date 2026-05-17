@@ -1,7 +1,15 @@
+# Visual Studio
 .vs/
 *.user
 *.suo
 *.slnx
 *.sqlite
-bin/
-obj/
+**/VSWorkspaceState.json
+
+# Build outputs - NE JAMAIS COMMITTER
+**/bin/
+**/obj/
+
+# OS
+Thumbs.db
+.DS_Store
