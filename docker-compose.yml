@@ -1,0 +1,36 @@
+# docker-compose.yml — EasySave LogServer v3.0
+# Starts the centralised log service.
+#
+# Logs are written to ./logs/ (next to this file) — directly accessible from Windows Explorer.
+# Configure EasySave settings: LogStorageMode = "Remote" or "Both", LogServerUrl = "http://localhost:5000"
+#
+# Commands:
+#   Start :  docker-compose up -d
+#   Stop  :  docker-compose down
+#   Logs  :  docker-compose logs -f
+
+version: "3.9"
+
+services:
+
+  easysave-logserver:
+    build:
+      context: ./EasySave.LogServer
+      dockerfile: Dockerfile
+    container_name: easysave-logserver
+    image: prosoft/easysave-logserver:3.0.0
+    restart: unless-stopped
+    ports:
+      - "5000:5000"         # Host port 5000 → container port 5000
+    volumes:
+      # Bind mount → logs appear in C:\EasySaveLogs\Centralized on Windows (visible in Explorer)
+      - C:/EasySaveLogs/Centralized:/logs
+    environment:
+      - LOG_DIR=/logs
+      - ASPNETCORE_ENVIRONMENT=Production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

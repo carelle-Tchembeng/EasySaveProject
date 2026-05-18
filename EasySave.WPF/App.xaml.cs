@@ -1,5 +1,6 @@
 // EasySave.WPF/App.xaml.cs
-// Entry point — detects CLI mode, wires all dependencies
+// UPDATED v3.0 — wires remote logging, updated DI
+
 using System.IO;
 using EasySave.Core.Entities;
 using EasySave.Core.Interfaces;
@@ -34,7 +35,6 @@ namespace EasySave.WPF
 
             _container = BuildContainer(settings);
 
-            // CLI mode: run headless and exit
             if (IsCli(e.Args))
             {
                 RunCli(e.Args);
@@ -42,7 +42,6 @@ namespace EasySave.WPF
                 return;
             }
 
-            // GUI mode: open main window
             var mainVM = _container.Resolve<MainViewModel>();
             var window = new MainWindow { DataContext = mainVM };
             MainWindow = window;
@@ -56,7 +55,6 @@ namespace EasySave.WPF
             var backupService = _container!.Resolve<BackupService>();
             var jobManager    = _container!.Resolve<JobManager>();
 
-            // Parse args: support "1-3" range and "1;3" list (same as v1.0/v1.1)
             var indices = ParseCliArgs(args, jobManager.Count);
             if (indices.Count > 0)
                 backupService.ExecuteList(indices);
@@ -71,7 +69,6 @@ namespace EasySave.WPF
             int hyphenIdx = token.IndexOf('-');
             if (hyphenIdx > 0 && hyphenIdx < token.Length - 1)
             {
-                // Range: 1-3
                 if (int.TryParse(token[..hyphenIdx], out int from) &&
                     int.TryParse(token[(hyphenIdx+1)..], out int to))
                     indices = Enumerable.Range(from, to - from + 1).ToList();
@@ -79,7 +76,6 @@ namespace EasySave.WPF
             }
             else if (token.Contains(';'))
             {
-                // List: 1;3
                 indices = token.Split(';')
                     .Where(p => int.TryParse(p.Trim(), out _))
                     .Select(int.Parse).ToList();
@@ -96,18 +92,18 @@ namespace EasySave.WPF
         {
             var container = new ServiceContainer();
 
-            // 1. D'ABORD : La Configuration (Indispensable pour tout le reste)
+            // 1. Configuration
             var appConfigRepo = new JsonAppConfigRepository(settings.AppConfigFilePath);
             container.Register<IAppConfigRepository>(appConfigRepo);
             AppConfiguration config = appConfigRepo.Load();
             container.Register<AppConfiguration>(config);
 
-            // 2. ENSUITE : La Localisation (On en a besoin pour les ViewModels)
+            // 2. Localisation
             var localization = new LocalizationService();
             container.Register<LocalizationService>(localization);
 
-            // 3. LE LOG : Configuration sécurisée du chemin
-            if (Enum.TryParse<LogFormat>(config.LogFormat, ignoreCase: true, out var logFmt) == false)
+            // 3. Log writer (EasyLog DLL)
+            if (!Enum.TryParse<LogFormat>(config.LogFormat, ignoreCase: true, out var logFmt))
                 logFmt = LogFormat.JSON;
 
             string logDirectory = settings.LogDirectory;
@@ -116,20 +112,26 @@ namespace EasySave.WPF
                 string appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
                 logDirectory = Path.Combine(appData, "EasySave", "logs");
             }
-
             if (!Directory.Exists(logDirectory)) Directory.CreateDirectory(logDirectory);
 
             IEasyLogWriter logWriter = LogWriterFactory.Create(logDirectory, logFmt);
             var logAdapter = new EasyLogAdapter(logWriter);
+
+            // v3.0: configure remote logging based on settings
+            logAdapter.ConfigureRemoteLogging(
+                localEnabled:  config.IsLocalLoggingEnabled(),
+                remoteEnabled: config.IsRemoteLoggingEnabled(),
+                serverUrl:     config.LogServerUrl);
+
             container.Register<ILogger>(logAdapter);
             container.Register<EasyLogAdapter>(logAdapter);
 
-            // 4. INFRASTRUCTURE & CORE
-            var configRepo = new JsonConfigRepository(settings.ConfigFilePath);
-            var stateRepo = new JsonStateRepository(settings.StateFilePath);
-            var fileSystem = new WindowsFileSystem();
+            // 4. Infrastructure
+            var configRepo   = new JsonConfigRepository(settings.ConfigFilePath);
+            var stateRepo    = new JsonStateRepository(settings.StateFilePath);
+            var fileSystem   = new WindowsFileSystem();
             var cryptoAdapter = new CryptoSoftAdapter(config);
-            var bizDetector = new BusinessSoftwareDetector();
+            var bizDetector  = new BusinessSoftwareDetector();
             var fullStrategy = new FullBackupStrategy();
             var diffStrategy = new DifferentialBackupStrategy();
 
@@ -149,8 +151,7 @@ namespace EasySave.WPF
 
             stateRepo.Clear(jobManager.GetAll());
 
-            // 5. EN DERNIER : Les ViewModels (Une fois que toutes leurs dépendances existent)
-            // On passe bien les 4 arguments : config, repo, adapter, ET localization
+            // 5. ViewModels
             var settingsVM = new SettingsViewModel(config, appConfigRepo, logAdapter, localization);
             container.Register<SettingsViewModel>(settingsVM);
 

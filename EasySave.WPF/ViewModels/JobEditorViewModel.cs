@@ -1,10 +1,11 @@
 // EasySave.WPF/ViewModels/JobEditorViewModel.cs
-// Per corrected diagram: Name, SourcePath, TargetPath, Type, SaveCommand, CancelCommand
+// UPDATED — added LocalizationService (L property) and TypeIndex for localized ComboBox
 
 using EasySave.Core.Entities;
 using EasySave.Core.Enums;
 using EasySave.Core.Services;
 using EasySave.WPF.Commands;
+using EasySave.WPF.Localization;
 using System.Windows.Input;
 
 namespace EasySave.WPF.ViewModels
@@ -15,8 +16,13 @@ namespace EasySave.WPF.ViewModels
     /// </summary>
     public class JobEditorViewModel : ViewModelBase
     {
-        private readonly JobManager _jobManager;
-        private readonly Guid?      _editId;
+        private readonly JobManager          _jobManager;
+        private readonly Guid?               _editId;
+        private readonly LocalizationService _localizationService;
+
+        // ── Localization ───────────────────────────────────────────
+        /// <summary>Exposes the localization service for {Binding L[key]} in XAML.</summary>
+        public LocalizationService L => _localizationService;
 
         // ── Bindable properties ────────────────────────────────────
 
@@ -48,6 +54,21 @@ namespace EasySave.WPF.ViewModels
             set => SetField(ref _type, value);
         }
 
+        /// <summary>
+        /// 0 = Full, 1 = Differential.
+        /// Used by the ComboBox (SelectedIndex) so localized item labels can be arbitrary strings.
+        /// </summary>
+        public int TypeIndex
+        {
+            get => (int)_type;
+            set
+            {
+                _type = (BackupType)value;
+                OnPropertyChanged(nameof(TypeIndex));
+                OnPropertyChanged(nameof(Type));
+            }
+        }
+
         public bool CanSave =>
             !string.IsNullOrWhiteSpace(Name) &&
             !string.IsNullOrWhiteSpace(SourcePath) &&
@@ -65,25 +86,32 @@ namespace EasySave.WPF.ViewModels
         // ── Constructor ────────────────────────────────────────────
 
         /// <summary>Create mode: no existing job.</summary>
-        public JobEditorViewModel(JobManager jobManager)
+        public JobEditorViewModel(JobManager jobManager, LocalizationService localizationService)
         {
-            _jobManager   = jobManager;
-            _editId       = null;
-            SaveCommand   = new RelayCommand(OnSave, () => CanSave);
-            CancelCommand = new RelayCommand(() => Closed?.Invoke(this, false));
+            _jobManager          = jobManager;
+            _localizationService = localizationService;
+            _editId              = null;
+            SaveCommand          = new RelayCommand(OnSave, () => CanSave);
+            CancelCommand        = new RelayCommand(() => Closed?.Invoke(this, false));
+
+            // Refresh all bindings on language change
+            _localizationService.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
         }
 
         /// <summary>Edit mode: pre-fills form with existing job.</summary>
-        public JobEditorViewModel(JobManager jobManager, BackupJob existing)
+        public JobEditorViewModel(JobManager jobManager, LocalizationService localizationService, BackupJob existing)
         {
-            _jobManager   = jobManager;
-            _editId       = existing.Id;
-            Name          = existing.Name;
-            SourcePath    = existing.SourcePath;
-            TargetPath    = existing.TargetPath;
-            Type          = existing.Type;
-            SaveCommand   = new RelayCommand(OnSave, () => CanSave);
-            CancelCommand = new RelayCommand(() => Closed?.Invoke(this, false));
+            _jobManager          = jobManager;
+            _localizationService = localizationService;
+            _editId              = existing.Id;
+            Name                 = existing.Name;
+            SourcePath           = existing.SourcePath;
+            TargetPath           = existing.TargetPath;
+            Type                 = existing.Type;
+            SaveCommand          = new RelayCommand(OnSave, () => CanSave);
+            CancelCommand        = new RelayCommand(() => Closed?.Invoke(this, false));
+
+            _localizationService.LanguageChanged += (_, _) => OnPropertyChanged(string.Empty);
         }
 
         // ── Private ────────────────────────────────────────────────

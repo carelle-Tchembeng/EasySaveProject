@@ -7,9 +7,9 @@
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>2.0.0</Version>
+    <Version>3.0.0</Version>
     <Authors>ProSoft</Authors>
-    <Description>EasySave v2.0 — WPF backup application by ProSoft.</Description>
+    <Description>EasySave v3.0 — WPF backup application: parallel jobs, priority files, pause/resume/stop, Docker log centralisation.</Description>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasySave.Core\EasySave.Core.csproj" />
@@ -21,4 +21,25 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <!--
+    Post-build: copie CryptoSoft.exe dans $(OutputPath)CryptoSoft\
+    après chaque build de EasySave.WPF, afin que le chemin configuré dans
+    les paramètres (…\bin\<Config>\net8.0-windows\CryptoSoft\CryptoSoft.exe)
+    soit toujours valide sans étape manuelle.
+    CryptoSoft cible net8.0 (sans -windows) → son output est dans son propre dossier.
+  -->
+  <Target Name="CopyCryptoSoftToOutput" AfterTargets="Build">
+    <PropertyGroup>
+      <CryptoSoftExe>$(MSBuildProjectDirectory)\..\CryptoSoft\bin\$(Configuration)\net8.0\CryptoSoft.exe</CryptoSoftExe>
+    </PropertyGroup>
+    <MakeDir Directories="$(OutputPath)CryptoSoft" />
+    <Copy SourceFiles="$(CryptoSoftExe)"
+          DestinationFolder="$(OutputPath)CryptoSoft"
+          SkipUnchangedFiles="true"
+          Condition="Exists('$(CryptoSoftExe)')" />
+    <Warning Text="CryptoSoft.exe introuvable à $(CryptoSoftExe) — build CryptoSoft d'abord."
+             Condition="!Exists('$(CryptoSoftExe)')" />
+  </Target>
+
 </Project>

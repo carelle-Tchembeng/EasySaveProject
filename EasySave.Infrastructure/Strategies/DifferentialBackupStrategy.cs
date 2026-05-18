@@ -1,24 +1,28 @@
 // EasySave.Infrastructure/Strategies/DifferentialBackupStrategy.cs
-// UPDATED v2.0 — adds IEncryptionService + AppConfiguration, callback has 5 params
+// UPDATED v3.0 — handles priority, large-file lock, pause/stop per-file
 
 using EasySave.Core.Entities;
 using EasySave.Core.Interfaces;
+using EasySave.Core.Services;
 using EasySave.Infrastructure.Helpers;
 
 namespace EasySave.Infrastructure.Strategies
 {
     /// <summary>
     /// Copies only files modified since the last full backup.
-    /// v2.0: encrypts eligible files after copy.
+    /// v3.0: participates in parallel coordination (same per-file order as FullBackupStrategy).
     /// </summary>
     public class DifferentialBackupStrategy : IBackupStrategy
     {
         public void Execute(
-            BackupJob          job,
-            IFileSystem        fileSystem,
-            ILogger            logger,
-            IEncryptionService encryptionService,
-            AppConfiguration   config,
+            BackupJob              job,
+            IFileSystem            fileSystem,
+            ILogger                logger,
+            IEncryptionService     encryptionService,
+            AppConfiguration       config,
+            JobExecutionContext     context,
+            PriorityManager        priorityManager,
+            LargeFileTransferLock  largeFileLock,
             Action<string, string, long, long, long> onFileCopied)
         {
             DateTime referenceDate = job.LastFullBackupDate!.Value;
@@ -27,21 +31,48 @@ namespace EasySave.Infrastructure.Strategies
             {
                 if (!IsModifiedSince(sourceFile, referenceDate, fileSystem)) continue;
 
-                string destFile = PathHelper.MapToTargetPath(job.SourcePath, job.TargetPath, sourceFile);
+                // 1. Stop check
+                context.StopToken.ThrowIfCancellationRequested();
 
-                string? destDir = Path.GetDirectoryName(destFile);
-                if (!string.IsNullOrEmpty(destDir)) fileSystem.CreateDirectory(destDir);
+                long fileSize = fileSystem.GetFileSize(sourceFile);
 
-                string uncSource      = fileSystem.ToUncPath(sourceFile);
-                string uncDest        = fileSystem.ToUncPath(destFile);
-                long   fileSize       = fileSystem.GetFileSize(sourceFile);
-                long   transferTimeMs = fileSystem.CopyFile(sourceFile, destFile);
+                // 2. Priority gate
+                priorityManager.WaitIfNonPriority(sourceFile, context.StopToken);
 
-                long encryptionTimeMs = 0;
-                if (transferTimeMs >= 0 && ShouldEncrypt(sourceFile, config))
-                    encryptionTimeMs = encryptionService.Encrypt(destFile);
+                // 3. Register priority + acquire large-file lock
+                priorityManager.RegisterFile(sourceFile);
+                largeFileLock.Acquire(fileSize, context.StopToken);
 
-                onFileCopied(uncSource, uncDest, fileSize, transferTimeMs, encryptionTimeMs);
+                try
+                {
+                    string destFile = PathHelper.MapToTargetPath(job.SourcePath, job.TargetPath, sourceFile);
+
+                    string? destDir = Path.GetDirectoryName(destFile);
+                    if (!string.IsNullOrEmpty(destDir)) fileSystem.CreateDirectory(destDir);
+
+                    string uncSource = fileSystem.ToUncPath(sourceFile);
+                    string uncDest   = fileSystem.ToUncPath(destFile);
+
+                    // 4. Copy
+                    long transferTimeMs = fileSystem.CopyFile(sourceFile, destFile);
+
+                    // 4b. Encrypt
+                    long encryptionTimeMs = 0;
+                    if (transferTimeMs >= 0 && ShouldEncrypt(sourceFile, config))
+                        encryptionTimeMs = encryptionService.Encrypt(destFile);
+
+                    // 5. Callback
+                    onFileCopied(uncSource, uncDest, fileSize, transferTimeMs, encryptionTimeMs);
+                }
+                finally
+                {
+                    // 6. Always release
+                    largeFileLock.Release(fileSize);
+                    priorityManager.ReleaseFile(sourceFile);
+                }
+
+                // 7. Pause check AFTER file is done
+                context.WaitIfPaused();
             }
         }
 

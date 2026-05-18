@@ -1,4 +1,5 @@
-// EasySave.Infrastructure/Repositories/JsonStateRepository.cs — unchanged from v1.1
+// EasySave.Infrastructure/Repositories/JsonStateRepository.cs
+// UPDATED v3.0 — lock object added to prevent IOException on state.tmp under parallel execution
 using EasySave.Core.Entities;
 using EasySave.Core.Interfaces;
 using EasySave.Infrastructure.Helpers;
@@ -16,9 +17,15 @@ namespace EasySave.Infrastructure.Repositories
         private readonly string _tempFilePath;
         private readonly JsonSerializerOptions _options;
 
+        /// <summary>
+        /// Serialises concurrent writes to state.tmp / state.json.
+        /// Without this lock, parallel jobs calling UpdateStateForAllJobs() simultaneously
+        /// all try to open the same state.tmp, causing IOException.
+        /// </summary>
+        private static readonly object _writeLock = new();
+
         public JsonStateRepository(string stateFilePath)
         {
-            // 🛠️ CORRECTION ICI : Si le chemin est vide, on force la valeur par défaut
             if (string.IsNullOrWhiteSpace(stateFilePath))
             {
                 string appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
@@ -29,7 +36,6 @@ namespace EasySave.Infrastructure.Repositories
                 _stateFilePath = stateFilePath;
             }
 
-            // On génère le fichier temporaire à partir du chemin sécurisé
             _tempFilePath = Path.ChangeExtension(_stateFilePath, ".tmp");
             _options = new JsonSerializerOptions { WriteIndented = true };
         }
@@ -40,8 +46,11 @@ namespace EasySave.Infrastructure.Repositories
             var entries = jobs.Select(MapToStateEntry).ToList();
             string json = JsonSerializer.Serialize(entries, _options);
 
-            File.WriteAllText(_tempFilePath, json, System.Text.Encoding.UTF8);
-            File.Move(_tempFilePath, _stateFilePath, overwrite: true);
+            lock (_writeLock)
+            {
+                File.WriteAllText(_tempFilePath, json, System.Text.Encoding.UTF8);
+                File.Move(_tempFilePath, _stateFilePath, overwrite: true);
+            }
         }
 
         public void Clear(List<BackupJob> jobs)
